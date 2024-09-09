@@ -11,7 +11,7 @@ class TitleHomePage extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.purple,
+        color: const Color.fromRGBO(111, 40, 176, 1.0),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(

@@ -27,14 +27,14 @@ class HomePage extends StatelessWidget {
     switch (currentIndex) {
       case 0:
         return Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const TitleHomePage(
                 title: 'Bienvenido\nCalorías consumidas',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2, // Número de columnas

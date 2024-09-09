@@ -1,3 +1,5 @@
+import 'package:calorie_counter/widgets/user_page/user_info.dart';
+import 'package:calorie_counter/widgets/user_page/user_profile_header.dart';
 import 'package:flutter/material.dart';
 
 class UserPage extends StatelessWidget {
@@ -6,39 +8,48 @@ class UserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Page'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage(
-                  'https://via.placeholder.com/150'),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Bienvenido, Usuario!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: Column(
+        children: [
+          const UserProfileHeader(
+            username: 'Lucia',
+            profileImageUrl: 'https://static.semrush.com/persona/personas/4436574'), // Sección del encabezado
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const UserInfo(
+                    email: 'lucia123@example.com',
+                    age: 23,
+                    weight: 65,
+                    height: 1.65,
+                    gender: 'Femenino',
+                    goal: 'Bajar peso',
+                  ), // Sección de información
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Acción de editar perfil
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(156, 40, 177, 1.0),
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.edit),
+                    label: const Text('Editar Perfil'),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Esta es tu página de perfil.',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-              },
-              child: const Text('Editar Perfil'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
