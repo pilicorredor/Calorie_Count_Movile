@@ -2,6 +2,7 @@ import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
+import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
 import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class HomePage extends StatelessWidget {
         .bnbIndex; // Obtiene el índice actual de la barra de navegación
 
     return Scaffold(
+      floatingActionButton: const CustomFabAddFood(),
       bottomNavigationBar: const CustomNavigationBar(),
       body: _getBody(
           currentIndex), // Cambia el cuerpo según el índice seleccionado
@@ -25,6 +27,7 @@ class HomePage extends StatelessWidget {
 
   // Método para obtener el cuerpo dinámico basado en el índice de la navegación
   Widget _getBody(int currentIndex) {
+    
     switch (currentIndex) {
       case 0:
         return Scaffold(
