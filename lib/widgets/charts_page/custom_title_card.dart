@@ -9,7 +9,7 @@ class CustomTitleCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.green[100],
+        color: const Color(0xFF6F28B0),
         borderRadius: BorderRadius.circular(12),
       ),
       child:  Row(
@@ -18,7 +18,7 @@ class CustomTitleCard extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ),
         ],
