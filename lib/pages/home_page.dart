@@ -5,6 +5,7 @@ import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
 import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -51,36 +52,77 @@ class HomePage extends StatelessWidget {
                   const Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage('utils/assets/usuario.png'),
+                        backgroundImage: NetworkImage(
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s'),
                         radius: 24,
                       ),
                       SizedBox(width: 12),
                       Text(
-                        'Hola \nTom Pikard',
+                        'Hola\n',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      Text(
+                        '\n Tom Pikard',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      )
                     ],
                   ),
                   const SizedBox(height: 20),
-
+                  EasyDateTimeLine(
+                    initialDate: DateTime.now(),
+                    onDateChange: (selectedDate) {
+                      //`selectedDate` the new date selected.
+                    },
+                    activeColor: const Color.fromARGB(255, 238, 155, 255),
+                    locale: "es",
+                    headerProps: const EasyHeaderProps(
+                      dateFormatter: DateFormatter.monthOnly(),
+                    ),
+                    dayProps: const EasyDayProps(
+                      height: 56.0,
+                      width: 56.0,
+                      dayStructure: DayStructure.dayNumDayStr,
+                      inactiveDayStyle: DayStyle(
+                        borderRadius: 48.0,
+                        dayNumStyle: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      activeDayStyle: DayStyle(
+                        dayNumStyle: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   // Promocion de la app
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.green[100],
+                      color: const Color.fromARGB(255, 221, 194, 233),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        //Image.asset('utils/assets/avocado.jpg', width: 60),
-                        SizedBox(width: 10),
-                        Expanded(
+                        Image.network(
+                            'https://cdn.pixabay.com/photo/2018/09/03/11/51/avocado-3651037_960_720.png',
+                            width: 70),
+                        const SizedBox(width: 10),
+                        const Expanded(
                           child: Text(
-                            'Un cuerpo saludable viene con buenos nutrientes\nEmpieza tu viaje a la salud ahora',
-                            style: TextStyle(fontSize: 16),
+                            'Un cuerpo saludable viene con buenos nutrientes.\n¡Empieza tu viaje a la salud ahora!',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontStyle: FontStyle.italic 
+                              ),
                           ),
                         ),
                       ],
@@ -107,19 +149,23 @@ class HomePage extends StatelessWidget {
                     children: const [
                       FoodCard(
                         title: 'Verduras',
-                        icon: Icons.local_florist,
+                        imageURL:
+                            'https://i.pinimg.com/564x/05/79/17/057917d2ef441b2e09d5a5e91a64cb08.jpg',
                       ),
                       FoodCard(
                         title: 'Frutas',
-                        icon: Icons.local_offer,
+                        imageURL:
+                            'https://i.pinimg.com/564x/cd/5e/8c/cd5e8cef99d7a9202fec45876d27e849.jpg',
                       ),
                       FoodCard(
                         title: 'Nueces',
-                        icon: Icons.ac_unit,
+                        imageURL:
+                            'https://i.pinimg.com/564x/45/ba/9f/45ba9f97cd8a9a768e7c9aeae739acaa.jpg',
                       ),
                       FoodCard(
                         title: 'Comida de mar',
-                        icon: Icons.anchor,
+                        imageURL:
+                            'https://i.pinimg.com/564x/c4/67/b4/c467b4e25343b42d0d4d45d2c0243e6a.jpg',
                       ),
                     ],
                   ),
