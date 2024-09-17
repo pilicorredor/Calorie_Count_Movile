@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class FoodCard extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final String imageURL;
 
-  const FoodCard({super.key, required this.title, required this.icon});
+  const FoodCard({super.key, required this.title, required this.imageURL});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,13 @@ class FoodCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 40),
+          Expanded(
+            child: Image.network(
+              imageURL,
+              height: 80,
+              width: 80,
+              fit: BoxFit.cover,
+          )),
           const SizedBox(height: 8),
           Text(title, style: const TextStyle(fontSize: 18)),
         ],
