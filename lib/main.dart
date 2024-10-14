@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       ],
         initialRoute: 'login', // Cambia la ruta inicial a la página de login
         routes: {
-          'login': (_) => LoginPage(), // Agrega la ruta para LoginPage
+          'login': (_) => const LoginPage(), // Agrega la ruta para LoginPage
           'home': (_) => const HomePage(),   // Ruta para HomePage
           'SingUp': (_) => const SignUpPage(),
         },

@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Text(
-                        '\n Tom Pikard',
+                        '\n Lucia',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
