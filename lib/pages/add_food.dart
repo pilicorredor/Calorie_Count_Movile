@@ -21,7 +21,7 @@ class _AddFoodState extends State<AddFood> {
   String _selectedCategory = 'Selecciona Categoría';
   String _selectedUnit = 'gramos';
 
-  List<String> _categories = ['Frutas', 'Verduras', 'Postres'];
+  final List<String> _categories = ['Frutas', 'Verduras', 'Postres'];
   String? _selectedIcon;
 
   @override
