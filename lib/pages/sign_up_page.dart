@@ -14,7 +14,6 @@ class _SignUpPageState extends State<SignUpPage> {
    final TextEditingController _dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
-  bool _obscureText = true;
   // Método para abrir el selector de fecha
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
