@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                 }),
                 const SizedBox(height: 20),
                 RegisterButton(onPressed: () {
-                  // Acción para el registro (actualmente no hace nada)
+                  Navigator.pushReplacementNamed(context, 'SingUp');
                 }),
               ],
             ),
