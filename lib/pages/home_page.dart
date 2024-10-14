@@ -23,19 +23,23 @@ class _HomePageState extends State<HomePage> {
   List<Category> categories = const [
     Category(
       name: 'Verduras',
-      imageUrl: 'https://i.pinimg.com/564x/05/79/17/057917d2ef441b2e09d5a5e91a64cb08.jpg',
+      imageUrl:
+          'https://i.pinimg.com/564x/05/79/17/057917d2ef441b2e09d5a5e91a64cb08.jpg',
     ),
     Category(
       name: 'Frutas',
-      imageUrl: 'https://i.pinimg.com/564x/cd/5e/8c/cd5e8cef99d7a9202fec45876d27e849.jpg',
+      imageUrl:
+          'https://i.pinimg.com/564x/cd/5e/8c/cd5e8cef99d7a9202fec45876d27e849.jpg',
     ),
     Category(
       name: 'Nueces',
-      imageUrl: 'https://i.pinimg.com/564x/45/ba/9f/45ba9f97cd8a9a768e7c9aeae739acaa.jpg',
+      imageUrl:
+          'https://i.pinimg.com/564x/45/ba/9f/45ba9f97cd8a9a768e7c9aeae739acaa.jpg',
     ),
     Category(
       name: 'Comida de mar',
-      imageUrl: 'https://i.pinimg.com/564x/c4/67/b4/c467b4e25343b42d0d4d45d2c0243e6a.jpg',
+      imageUrl:
+          'https://i.pinimg.com/564x/c4/67/b4/c467b4e25343b42d0d4d45d2c0243e6a.jpg',
     ),
   ];
 
@@ -172,7 +176,8 @@ class _HomePageState extends State<HomePage> {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 1,
                       crossAxisSpacing: 10,
@@ -183,7 +188,8 @@ class _HomePageState extends State<HomePage> {
                       final category = categories[index];
                       return FoodCard(
                         category: category,
-                        onTap: () => _navigateToCategoryDetail(category.name), // Navega a la nueva pantalla
+                        onTap: () => _navigateToCategoryDetail(
+                            category.name), // Navega a la nueva pantalla
                       );
                     },
                   ),
@@ -193,9 +199,9 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       case 1:
-        return const ChartsPage(); // Cambiar por tu página de gráficos
+        return const FavoritesPage(); // Cambiar por tu página de gráficos
       case 2:
-        return const FavoritesPage(); // Cambiar por tu página de favoritos
+        return const ChartsPage(); // Cambiar por tu página de favoritos
       case 3:
         return const UserPage(); // Cambiar por tu página de usuario
       default:
