@@ -1,3 +1,4 @@
+import 'package:calorie_counter/utils/icon_list.dart';
 import 'package:flutter/material.dart';
 
 class AddFood extends StatefulWidget {
@@ -14,9 +15,14 @@ class _AddFoodState extends State<AddFood> {
   final TextEditingController _foodNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
+  final TextEditingController _newCategoryController = TextEditingController();
 
-  // Almacena la opción seleccionada en la lista desplegable
+  // Almacena la categoría seleccionada
+  String _selectedCategory = 'Selecciona Categoría';
   String _selectedUnit = 'gramos';
+
+  List<String> _categories = ['Frutas', 'Verduras', 'Postres'];
+  String? _selectedIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +52,7 @@ class _AddFoodState extends State<AddFood> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              
+
               // Campo de texto para el nombre del alimento
               TextFormField(
                 controller: _foodNameController,
@@ -86,7 +92,8 @@ class _AddFoodState extends State<AddFood> {
               // Dropdown para seleccionar la unidad de medida
               DropdownButtonFormField<String>(
                 value: _selectedUnit,
-                items: ['gramos', 'kilos', 'porciones', 'Unidades', 'Litros'].map((String value) {
+                items: ['gramos', 'kilos', 'porciones', 'Unidades', 'Litros']
+                    .map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -122,48 +129,236 @@ class _AddFoodState extends State<AddFood> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16.0),
+
+              // Botón para seleccionar la categoría
+              GestureDetector(
+                onTap: _selectCategory,
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.category_outlined, size: 30.0),
+                      const SizedBox(width: 16.0),
+                      Text(
+                        _selectedCategory,
+                        style: const TextStyle(fontSize: 16.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 32.0),
 
               // Botón para "Agregar" comida
               ElevatedButton.icon(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Aquí iría el código para agregar más alimentos
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Alimento agregado')),
                     );
-
-                    // Limpiar los campos para ingresar otro alimento
                     _foodNameController.clear();
                     _quantityController.clear();
                     _caloriesController.clear();
                     setState(() {
                       _selectedUnit = 'gramos';
+                      _selectedCategory = 'Selecciona Categoría';
                     });
                   }
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Agregar'),
               ),
-
               const SizedBox(height: 16.0),
-
-              // Botón para "Registrar Comida"
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Aquí iría el código para finalizar y registrar la comida
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Comida registrada')),
-                    );
-                  }
-                },
-                child: const Text('Registrar Comida'),
-              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Función para seleccionar la categoría
+  void _selectCategory() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return ListView(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.fastfood),
+              title: const Text('Frutas'),
+              onTap: () {
+                setState(() {
+                  _selectedCategory = 'Frutas';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.local_dining),
+              title: const Text('Verduras'),
+              onTap: () {
+                setState(() {
+                  _selectedCategory = 'Verduras';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cake),
+              title: const Text('Postres'),
+              onTap: () {
+                setState(() {
+                  _selectedCategory = 'Postres';
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text('Crear nueva categoría'),
+              onTap: () {
+                Navigator.pop(context);
+                _showCreateCategoryDialog();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Muestra el diálogo para crear una nueva categoría
+  void _showCreateCategoryDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Crear nueva categoría'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Campo de texto para el nombre de la categoría
+                TextField(
+                  controller: _newCategoryController,
+                  decoration: const InputDecoration(
+                    hintText: 'Nombre de la categoría',
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Botón para seleccionar el ícono
+                GestureDetector(
+                  onTap: _selectIcon, // Abre el diálogo para seleccionar ícono
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.insert_emoticon, size: 30.0),
+                        const SizedBox(width: 16.0),
+                        Text(
+                          _selectedIcon != null
+                              ? 'Ícono seleccionado: $_selectedIcon'
+                              : 'Seleccionar Ícono',
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (_newCategoryController.text.isNotEmpty &&
+                    _selectedIcon != null) {
+                  setState(() {
+                    _categories.add(_newCategoryController.text);
+                    _selectedCategory = _newCategoryController.text;
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Crear'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Muestra el diálogo con la cuadrícula de íconos
+  void _selectIcon() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Selecciona un ícono'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              itemCount: IconList().iconMap.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5, // Número de íconos por fila
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+              ),
+              itemBuilder: (context, index) {
+                String key = IconList().iconMap.keys.elementAt(index);
+                IconData icon = IconList().iconMap[key]!;
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIcon = key; // Guardar el ícono seleccionado
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedIcon == key
+                            ? Colors.blue
+                            : Colors.transparent,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Icon(icon, size: 30.0),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
