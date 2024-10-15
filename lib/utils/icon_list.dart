@@ -21,5 +21,8 @@ class IconList {
     'air_outlined': Icons.air_outlined,
     'airplanemode_active_outlined': Icons.airplanemode_active_outlined,
     'home': Icons.home_outlined,
+    'Icon_cake': Icons.cake,
+    'Icon_grass': Icons.grass,
+    'Icon_apple': Icons.apple,
   };
 }

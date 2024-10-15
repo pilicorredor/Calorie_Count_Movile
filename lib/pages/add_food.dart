@@ -1,4 +1,6 @@
 import 'package:calorie_counter/utils/icon_list.dart';
+import 'package:calorie_counter/utils/utils.dart';
+import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:flutter/material.dart';
 
 class AddFood extends StatefulWidget {
@@ -10,7 +12,8 @@ class AddFood extends StatefulWidget {
 
 class _AddFoodState extends State<AddFood> {
   final _formKey = GlobalKey<FormState>();
-
+  var catList = CategoryList().catList;
+  
   // Controladores para los campos de texto
   final TextEditingController _foodNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -181,56 +184,53 @@ class _AddFoodState extends State<AddFood> {
     );
   }
 
-  // Función para seleccionar la categoría
-  void _selectCategory() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return ListView(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.fastfood),
-              title: const Text('Frutas'),
-              onTap: () {
-                setState(() {
-                  _selectedCategory = 'Frutas';
-                });
-                Navigator.pop(context);
+
+void _selectCategory() {
+  final categoryList = CategoryList().catList; // Obtener la lista de categorías
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Column(
+        mainAxisSize: MainAxisSize.min, // Para que el modal ajuste su tamaño
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: categoryList.length,
+              itemBuilder: (context, index) {
+                var category = categoryList[index];
+                return ListTile(
+                  leading: Icon(
+                    category.icon.toIcon(), 
+                    color: Theme.of(context).iconTheme.color,
+                    size: 35.0,
+                  ),
+                  title: Text(category.category),
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = category.category;
+                    });
+                    Navigator.pop(context);
+                  },
+                );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.local_dining),
-              title: const Text('Verduras'),
-              onTap: () {
-                setState(() {
-                  _selectedCategory = 'Verduras';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.cake),
-              title: const Text('Postres'),
-              onTap: () {
-                setState(() {
-                  _selectedCategory = 'Postres';
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text('Crear nueva categoría'),
-              onTap: () {
-                Navigator.pop(context);
-                _showCreateCategoryDialog();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: const Text('Crear nueva categoría'),
+            onTap: () {
+              Navigator.pop(context); // Cierra el modal
+              _showCreateCategoryDialog(); // Muestra el diálogo para crear una nueva categoría
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
 
 // Muestra el diálogo para crear una nueva categoría
   void _showCreateCategoryDialog() {
