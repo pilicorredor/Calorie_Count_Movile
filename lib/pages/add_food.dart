@@ -1,13 +1,17 @@
+import 'package:calorie_counter/models/category_model.dart';
+import 'package:calorie_counter/utils/constants.dart';
 import 'package:calorie_counter/utils/icon_list.dart';
 import 'package:calorie_counter/utils/utils.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
 class AddFood extends StatefulWidget {
+
   const AddFood({super.key});
 
   @override
-  _AddFoodState createState() => _AddFoodState();
+  State<AddFood> createState() => _AddFoodState();
 }
 
 class _AddFoodState extends State<AddFood> {
@@ -231,79 +235,144 @@ void _selectCategory() {
 }
 
 
-
 // Muestra el diálogo para crear una nueva categoría
-  void _showCreateCategoryDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Crear nueva categoría'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Campo de texto para el nombre de la categoría
-                TextField(
-                  controller: _newCategoryController,
-                  decoration: const InputDecoration(
-                    hintText: 'Nombre de la categoría',
-                  ),
+void _showCreateCategoryDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Crear nueva categoría'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Campo de texto para el nombre de la categoría
+              TextField(
+                controller: _newCategoryController,
+                decoration: const InputDecoration(
+                  hintText: 'Nombre de la categoría',
                 ),
-                const SizedBox(height: 16.0),
+              ),
+              const SizedBox(height: 16.0),
 
-                // Botón para seleccionar el ícono
-                GestureDetector(
-                  onTap: _selectIcon, // Abre el diálogo para seleccionar ícono
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.insert_emoticon, size: 30.0),
-                        const SizedBox(width: 16.0),
-                        Text(
-                          _selectedIcon != null
-                              ? 'Ícono seleccionado: $_selectedIcon'
-                              : 'Seleccionar Ícono',
-                          style: const TextStyle(fontSize: 16.0),
-                        ),
-                      ],
-                    ),
+              // Botón para seleccionar el ícono
+              GestureDetector(
+                onTap: _selectIcon, // Abre el diálogo para seleccionar ícono
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.insert_emoticon, size: 30.0),
+                      const SizedBox(width: 16.0),
+                      Text(
+                        _selectedIcon != null
+                            ? 'Ícono seleccionado: $_selectedIcon'
+                            : 'Seleccionar Ícono',
+                        style: const TextStyle(fontSize: 16.0),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16.0),
-              ],
+              ),
+              const SizedBox(height: 16.0),
+
+              // Botón para seleccionar el color
+              GestureDetector(
+                onTap: _selectColor, // Abre el diálogo para seleccionar color
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: FeaturesModel().color.toColor(),
+                        radius: 18.0, // Tamaño del círculo
+                      ),
+                      const SizedBox(width: 16.0),
+                      Text(
+                        'Seleccionar Color',
+                        style: const TextStyle(fontSize: 16.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (_newCategoryController.text.isNotEmpty &&
+                  _selectedIcon != null &&
+                  FeaturesModel().color != null) {
+                setState(() {
+                  _categories.add(_newCategoryController.text);
+                  _selectedCategory = _newCategoryController.text;
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Crear'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancelar'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Método para seleccionar un color
+void _selectColor() {
+  showModalBottomSheet(
+    shape: Constants.bottomSheet(),
+    isDismissible: false,
+    context: context,
+    builder: (context) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MaterialColorPicker(
+            selectedColor: FeaturesModel().color.toColor(),
+            physics: const NeverScrollableScrollPhysics(),
+            circleSize: 50.0,
+            onColorChange: (Color color) {
+              var hexColor =
+                  '#${color.value.toRadixString(16).substring(2, 8)}';
+              setState(() {
+                FeaturesModel().color = hexColor; // Actualiza el color en el modelo
+              });
+            },
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Constants.customButton(
+              Colors.green,
+              Colors.transparent,
+              'Listo',
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (_newCategoryController.text.isNotEmpty &&
-                    _selectedIcon != null) {
-                  setState(() {
-                    _categories.add(_newCategoryController.text);
-                    _selectedCategory = _newCategoryController.text;
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Crear'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancelar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+        ],
+      );
+    },
+  );
+}
+
 
 // Muestra el diálogo con la cuadrícula de íconos
   void _selectIcon() {

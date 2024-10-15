@@ -1,4 +1,5 @@
 import 'package:calorie_counter/models/category.dart';
+import 'package:calorie_counter/models/category_model.dart';
 import 'package:calorie_counter/pages/add_category.dart';
 import 'package:calorie_counter/pages/add_food.dart';
 import 'package:calorie_counter/pages/add_recipes.dart';
