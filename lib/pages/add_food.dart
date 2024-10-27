@@ -33,6 +33,7 @@ class _AddFoodState extends State<AddFood> {
 
   final List<String> _categories = ['Frutas', 'Verduras', 'Postres'];
   String? _selectedIcon;
+
   final DBFood dbFood = DBFood();
 
   @override
@@ -313,9 +314,9 @@ void _showCreateCategoryDialog() {
                         radius: 18.0, // Tamaño del círculo
                       ),
                       const SizedBox(width: 16.0),
-                      Text(
+                      const Text(
                         'Seleccionar Color',
-                        style: const TextStyle(fontSize: 16.0),
+                        style: TextStyle(fontSize: 16.0),
                       ),
                     ],
                   ),
@@ -330,7 +331,7 @@ void _showCreateCategoryDialog() {
             onPressed: () {
               if (_newCategoryController.text.isNotEmpty &&
                   _selectedIcon != null &&
-                  FeaturesModel().color != null) {
+                  FeaturesModel().id != null) {
                 setState(() {
                   _categories.add(_newCategoryController.text);
                   _selectedCategory = _newCategoryController.text;
