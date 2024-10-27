@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Lista de categorías
-  List<Category> categories = const [
+  List<Category> categories = [
     Category(
       name: 'Verduras',
       imageUrl:
@@ -214,7 +214,8 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CategoryDetailPage(categoryName: categoryName),
+        // builder: (context) => CategoryDetailPage(categoryName: categoryName),
+        builder: (context) => CategoryDetailPage(),
       ),
     );
   }

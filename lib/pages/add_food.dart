@@ -1,10 +1,13 @@
 import 'package:calorie_counter/models/category_model.dart';
+import 'package:calorie_counter/models/food.dart';
+import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:calorie_counter/utils/constants.dart';
 import 'package:calorie_counter/utils/icon_list.dart';
 import 'package:calorie_counter/utils/utils.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:intl/intl.dart';
 
 class AddFood extends StatefulWidget {
 
@@ -30,6 +33,7 @@ class _AddFoodState extends State<AddFood> {
 
   final List<String> _categories = ['Frutas', 'Verduras', 'Postres'];
   String? _selectedIcon;
+  final DBFood dbFood = DBFood();
 
   @override
   Widget build(BuildContext context) {
@@ -163,11 +167,24 @@ class _AddFoodState extends State<AddFood> {
 
               // Botón para "Agregar" comida
               ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+
+                    Food newFood = Food(
+                      name:_foodNameController.text,
+                      quantity: double.parse(_quantityController.text),
+                      unit: _selectedUnit,
+                      calories: double.parse(_caloriesController.text),
+                      createdAt: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+                    );
+                    
+
+                    await dbFood.addNewFood(newFood);
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Alimento agregado')),
                     );
+                    
                     _foodNameController.clear();
                     _quantityController.clear();
                     _caloriesController.clear();
