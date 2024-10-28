@@ -32,24 +32,24 @@ class DBFEatures {
     });
   }
 
-  addNewFeature(FeaturesModel feature) async {
+  addNewFeature(CategoryModel feature) async {
     final db = await database;
     final response = db.insert('Feature', feature.toJson());
     return response;
   }
 
-  Future<List<FeaturesModel>> getAllFeatures() async {
+  Future<List<CategoryModel>> getAllFeatures() async {
     final db = await database;
     final response = await db.query('Feature');
 
-    List<FeaturesModel> fList = response.isNotEmpty
-        ? response.map((e) => FeaturesModel.fromJson(e)).toList()
+    List<CategoryModel> fList = response.isNotEmpty
+        ? response.map((e) => CategoryModel.fromJson(e)).toList()
         : [];
 
     return fList;
   }
 
-  Future<int> updateFeatures(FeaturesModel features) async {
+  Future<int> updateFeatures(CategoryModel features) async {
     final db = await database;
     final response = db.update('Feature', features.toJson(),
         where: 'id = ?', whereArgs: [features.id]);

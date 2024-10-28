@@ -1,9 +1,10 @@
-import 'package:calorie_counter/models/category.dart';
+import 'package:calorie_counter/models/category_model.dart';
 import 'package:calorie_counter/pages/category_detail_page.dart'; // Asegúrate de importar la nueva pantalla
 import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
+import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
 import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
@@ -20,28 +21,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Lista de categorías
-  List<Category> categories = [
-    Category(
-      name: 'Verduras',
-      imageUrl:
-          'https://i.pinimg.com/564x/05/79/17/057917d2ef441b2e09d5a5e91a64cb08.jpg',
-    ),
-    Category(
-      name: 'Frutas',
-      imageUrl:
-          'https://i.pinimg.com/564x/cd/5e/8c/cd5e8cef99d7a9202fec45876d27e849.jpg',
-    ),
-    Category(
-      name: 'Nueces',
-      imageUrl:
-          'https://i.pinimg.com/564x/45/ba/9f/45ba9f97cd8a9a768e7c9aeae739acaa.jpg',
-    ),
-    Category(
-      name: 'Comida de mar',
-      imageUrl:
-          'https://i.pinimg.com/564x/c4/67/b4/c467b4e25343b42d0d4d45d2c0243e6a.jpg',
-    ),
-  ];
+  List<CategoryModel> categories = CategoryList().getAllCategories();
+  int lengthCategories = CategoryList().getLenghtCategories();
+  DateTime selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -49,17 +31,10 @@ class _HomePageState extends State<HomePage> {
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
 
     return Scaffold(
-      floatingActionButton: CustomFabAddFood(onCategoryAdded: _addCategory),
+      floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
       body: _getBody(currentIndex), // Cambia el cuerpo según el índice
     );
-  }
-
-  // Método para agregar una nueva categoría
-  void _addCategory(Category newCategory) {
-    setState(() {
-      categories.add(newCategory);
-    });
   }
 
   // Método para obtener el cuerpo dinámico basado en el índice de la navegación
@@ -110,8 +85,10 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 20),
                   EasyDateTimeLine(
                     initialDate: DateTime.now(),
-                    onDateChange: (selectedDate) {
-                      // `selectedDate` es la nueva fecha seleccionada
+                    onDateChange: (newSelectedDate) {
+                      setState(() {
+                        selectedDate = newSelectedDate;
+                      });
                     },
                     activeColor: const Color.fromARGB(255, 238, 155, 255),
                     locale: "es",
@@ -183,13 +160,13 @@ class _HomePageState extends State<HomePage> {
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                     ),
-                    itemCount: categories.length,
+                    itemCount: lengthCategories,
                     itemBuilder: (context, index) {
                       final category = categories[index];
                       return FoodCard(
                         category: category,
-                        onTap: () => _navigateToCategoryDetail(
-                            category.name), // Navega a la nueva pantalla
+                        onTap: () =>
+                            _navigateToCategoryDetail(category.categoryName),
                       );
                     },
                   ),
@@ -215,7 +192,7 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
         // builder: (context) => CategoryDetailPage(categoryName: categoryName),
-        builder: (context) => CategoryDetailPage(),
+        builder: (context) => CategoryDetailPage(selectedDate: selectedDate),
       ),
     );
   }

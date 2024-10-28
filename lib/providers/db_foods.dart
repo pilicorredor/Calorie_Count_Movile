@@ -48,4 +48,20 @@ class DBFood {
 
     return fList;
   }
+
+  // Método para obtener comidas de una fecha específica
+  Future<List<Food>> getFoodsByDate(String date) async {
+    final db = await database;
+    final response = await db.query(
+      'Food',
+      where: 'createdAt = ?',
+      whereArgs: [date],
+    );
+
+    List<Food> fList = response.isNotEmpty
+        ? response.map((e) => Food.fromJson(e)).toList()
+        : [];
+
+    return fList;
+  }
 }

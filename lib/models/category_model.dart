@@ -1,33 +1,33 @@
 import 'dart:convert';
 
-FeaturesModel featuresModelFromJson(String str) =>
-    FeaturesModel.fromJson(json.decode(str));
+CategoryModel featuresModelFromJson(String str) =>
+    CategoryModel.fromJson(json.decode(str));
 
-String featuresModelToJson(FeaturesModel data) => json.encode(data.toJson());
+String featuresModelToJson(CategoryModel data) => json.encode(data.toJson());
 
-class FeaturesModel {
-  FeaturesModel({
+class CategoryModel {
+  CategoryModel({
     this.id,
-    this.category = '',
+    this.categoryName = '',
     this.color = '#baf748',
     this.icon = 'ad_rounded',
   });
 
   int? id;
-  String category;
+  String categoryName;
   String color;
   String icon;
 
-  factory FeaturesModel.fromJson(Map<String, dynamic> json) => FeaturesModel(
+  factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
         id: json["id"],
-        category: json["category"],
+        categoryName: json["category"],
         color: json["color"],
         icon: json["icon"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "category": category,
+        "category": categoryName,
         "color": color,
         "icon": icon,
       };

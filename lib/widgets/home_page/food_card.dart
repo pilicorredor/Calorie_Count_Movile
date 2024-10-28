@@ -1,41 +1,45 @@
+import 'package:calorie_counter/models/category_model.dart';
+import 'package:calorie_counter/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:calorie_counter/models/category.dart';
 
 class FoodCard extends StatelessWidget {
-  final Category category; // Objeto Category
-  final VoidCallback onTap; // Callback para manejar el evento de toque
+  final CategoryModel category;
+  final VoidCallback onTap;
 
   const FoodCard({
     super.key,
     required this.category,
-    required this.onTap, // Acepta el callback en el constructor
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( // Detectar toques
-      onTap: onTap, // Llama al callback cuando se presiona la tarjeta
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: category.color.toColor(),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: Image.network(
-                category.imageUrl, // Usar imageUrl del objeto Category
-                height: 80,
-                width: 80,
-                fit: BoxFit.cover,
+              child: Icon(
+                category.icon.toIcon(),
+                size: 80,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              category.name, // Usar name del objeto Category
-              style: const TextStyle(fontSize: 18),
+              category.categoryName,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

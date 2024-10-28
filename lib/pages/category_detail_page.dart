@@ -24,11 +24,13 @@
 import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:flutter/material.dart';
 import 'package:calorie_counter/models/food.dart';
+import 'package:intl/intl.dart';
 
 class CategoryDetailPage extends StatelessWidget {
+  final DateTime selectedDate;
   final DBFood dbFood = DBFood();
 
-  CategoryDetailPage({super.key});
+  CategoryDetailPage({super.key, required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,8 @@ class CategoryDetailPage extends StatelessWidget {
         title: const Text('Lista de Comidas'),
       ),
       body: FutureBuilder<List<Food>>(
-        future: dbFood.getAllFoods(),
+        future: dbFood
+            .getFoodsByDate(DateFormat('dd/MM/yyyy').format(selectedDate)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -64,4 +67,3 @@ class CategoryDetailPage extends StatelessWidget {
     );
   }
 }
-

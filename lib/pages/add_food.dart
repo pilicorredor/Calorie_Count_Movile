@@ -10,8 +10,8 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 import 'package:intl/intl.dart';
 
 class AddFood extends StatefulWidget {
-
-  const AddFood({super.key});
+  final DateTime selectedDate;
+  const AddFood({super.key, required this.selectedDate});
 
   @override
   State<AddFood> createState() => _AddFoodState();
@@ -20,7 +20,7 @@ class AddFood extends StatefulWidget {
 class _AddFoodState extends State<AddFood> {
   final _formKey = GlobalKey<FormState>();
   var catList = CategoryList().catList;
-  
+
   // Controladores para los campos de texto
   final TextEditingController _foodNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -31,7 +31,7 @@ class _AddFoodState extends State<AddFood> {
   String _selectedCategory = 'Selecciona Categoría';
   String _selectedUnit = 'gramos';
 
-  final List<String> _categories = ['Frutas', 'Verduras', 'Postres'];
+  final List<String> _categories = CategoryList().getAllNamesCategories();
   String? _selectedIcon;
 
   final DBFood dbFood = DBFood();
@@ -170,22 +170,21 @@ class _AddFoodState extends State<AddFood> {
               ElevatedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-
                     Food newFood = Food(
-                      name:_foodNameController.text,
+                      name: _foodNameController.text,
                       quantity: double.parse(_quantityController.text),
                       unit: _selectedUnit,
                       calories: double.parse(_caloriesController.text),
-                      createdAt: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+                      createdAt:
+                          DateFormat('dd/MM/yyyy').format(widget.selectedDate),
                     );
-                    
 
                     await dbFood.addNewFood(newFood);
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Alimento agregado')),
                     );
-                    
+
                     _foodNameController.clear();
                     _quantityController.clear();
                     _caloriesController.clear();
@@ -206,191 +205,190 @@ class _AddFoodState extends State<AddFood> {
     );
   }
 
+  void _selectCategory() {
+    final categoryList =
+        CategoryList().catList; // Obtener la lista de categorías
 
-void _selectCategory() {
-  final categoryList = CategoryList().catList; // Obtener la lista de categorías
-
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      return Column(
-        mainAxisSize: MainAxisSize.min, // Para que el modal ajuste su tamaño
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: categoryList.length,
-              itemBuilder: (context, index) {
-                var category = categoryList[index];
-                return ListTile(
-                  leading: Icon(
-                    category.icon.toIcon(), 
-                    color: Theme.of(context).iconTheme.color,
-                    size: 35.0,
-                  ),
-                  title: Text(category.category),
-                  onTap: () {
-                    setState(() {
-                      _selectedCategory = category.category;
-                    });
-                    Navigator.pop(context);
-                  },
-                );
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min, // Para que el modal ajuste su tamaño
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: categoryList.length,
+                itemBuilder: (context, index) {
+                  var category = categoryList[index];
+                  return ListTile(
+                    leading: Icon(
+                      category.icon.toIcon(),
+                      color: Theme.of(context).iconTheme.color,
+                      size: 35.0,
+                    ),
+                    title: Text(category.categoryName),
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = category.categoryName;
+                      });
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text('Crear nueva categoría'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el modal
+                _showCreateCategoryDialog(); // Muestra el diálogo para crear una nueva categoría
               },
             ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.add),
-            title: const Text('Crear nueva categoría'),
-            onTap: () {
-              Navigator.pop(context); // Cierra el modal
-              _showCreateCategoryDialog(); // Muestra el diálogo para crear una nueva categoría
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
+          ],
+        );
+      },
+    );
+  }
 
 // Muestra el diálogo para crear una nueva categoría
-void _showCreateCategoryDialog() {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Crear nueva categoría'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Campo de texto para el nombre de la categoría
-              TextField(
-                controller: _newCategoryController,
-                decoration: const InputDecoration(
-                  hintText: 'Nombre de la categoría',
-                ),
-              ),
-              const SizedBox(height: 16.0),
-
-              // Botón para seleccionar el ícono
-              GestureDetector(
-                onTap: _selectIcon, // Abre el diálogo para seleccionar ícono
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.insert_emoticon, size: 30.0),
-                      const SizedBox(width: 16.0),
-                      Text(
-                        _selectedIcon != null
-                            ? 'Ícono seleccionado: $_selectedIcon'
-                            : 'Seleccionar Ícono',
-                        style: const TextStyle(fontSize: 16.0),
-                      ),
-                    ],
+  void _showCreateCategoryDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Crear nueva categoría'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Campo de texto para el nombre de la categoría
+                TextField(
+                  controller: _newCategoryController,
+                  decoration: const InputDecoration(
+                    hintText: 'Nombre de la categoría',
                   ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
 
-              // Botón para seleccionar el color
-              GestureDetector(
-                onTap: _selectColor, // Abre el diálogo para seleccionar color
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: FeaturesModel().color.toColor(),
-                        radius: 18.0, // Tamaño del círculo
-                      ),
-                      const SizedBox(width: 16.0),
-                      const Text(
-                        'Seleccionar Color',
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                    ],
+                // Botón para seleccionar el ícono
+                GestureDetector(
+                  onTap: _selectIcon, // Abre el diálogo para seleccionar ícono
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.insert_emoticon, size: 30.0),
+                        const SizedBox(width: 16.0),
+                        Text(
+                          _selectedIcon != null
+                              ? 'Ícono seleccionado: $_selectedIcon'
+                              : 'Seleccionar Ícono',
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (_newCategoryController.text.isNotEmpty &&
-                  _selectedIcon != null &&
-                  FeaturesModel().id != null) {
-                setState(() {
-                  _categories.add(_newCategoryController.text);
-                  _selectedCategory = _newCategoryController.text;
-                });
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Crear'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Cancelar'),
-          ),
-        ],
-      );
-    },
-  );
-}
+                const SizedBox(height: 16.0),
 
-// Método para seleccionar un color
-void _selectColor() {
-  showModalBottomSheet(
-    shape: Constants.bottomSheet(),
-    isDismissible: false,
-    context: context,
-    builder: (context) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MaterialColorPicker(
-            selectedColor: FeaturesModel().color.toColor(),
-            physics: const NeverScrollableScrollPhysics(),
-            circleSize: 50.0,
-            onColorChange: (Color color) {
-              var hexColor =
-                  '#${color.value.toRadixString(16).substring(2, 8)}';
-              setState(() {
-                FeaturesModel().color = hexColor; // Actualiza el color en el modelo
-              });
-            },
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Constants.customButton(
-              Colors.green,
-              Colors.transparent,
-              'Listo',
+                // Botón para seleccionar el color
+                GestureDetector(
+                  onTap: _selectColor, // Abre el diálogo para seleccionar color
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: CategoryModel().color.toColor(),
+                          radius: 18.0, // Tamaño del círculo
+                        ),
+                        const SizedBox(width: 16.0),
+                        const Text(
+                          'Seleccionar Color',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+              ],
             ),
           ),
-        ],
-      );
-    },
-  );
-}
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (_newCategoryController.text.isNotEmpty &&
+                    _selectedIcon != null &&
+                    CategoryModel().id != null) {
+                  setState(() {
+                    _categories.add(_newCategoryController.text);
+                    _selectedCategory = _newCategoryController.text;
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Crear'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+// Método para seleccionar un color
+  void _selectColor() {
+    showModalBottomSheet(
+      shape: Constants.bottomSheet(),
+      isDismissible: false,
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MaterialColorPicker(
+              selectedColor: CategoryModel().color.toColor(),
+              physics: const NeverScrollableScrollPhysics(),
+              circleSize: 50.0,
+              onColorChange: (Color color) {
+                var hexColor =
+                    '#${color.value.toRadixString(16).substring(2, 8)}';
+                setState(() {
+                  CategoryModel().color =
+                      hexColor; // Actualiza el color en el modelo
+                });
+              },
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Constants.customButton(
+                Colors.green,
+                Colors.transparent,
+                'Listo',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 // Muestra el diálogo con la cuadrícula de íconos
   void _selectIcon() {
