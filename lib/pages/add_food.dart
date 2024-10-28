@@ -286,7 +286,7 @@ class _AddFoodState extends State<AddFood> {
                         const SizedBox(width: 16.0),
                         Text(
                           _selectedIcon != null
-                              ? 'Ícono seleccionado: $_selectedIcon'
+                              ? '$_selectedIcon'
                               : 'Seleccionar Ícono',
                           style: const TextStyle(fontSize: 16.0),
                         ),
@@ -328,8 +328,7 @@ class _AddFoodState extends State<AddFood> {
             TextButton(
               onPressed: () {
                 if (_newCategoryController.text.isNotEmpty &&
-                    _selectedIcon != null &&
-                    CategoryModel().id != null) {
+                    _selectedIcon != null) {
                   setState(() {
                     _categories.add(_newCategoryController.text);
                     _selectedCategory = _newCategoryController.text;
