@@ -1,5 +1,6 @@
 import 'package:calorie_counter/models/category_model.dart';
 import 'package:calorie_counter/models/food.dart';
+import 'package:calorie_counter/providers/db_category.dart';
 import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:calorie_counter/utils/constants.dart';
 import 'package:calorie_counter/utils/icon_list.dart';
@@ -25,7 +26,9 @@ class _AddFoodState extends State<AddFood> {
   final TextEditingController _foodNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
-  final TextEditingController _newCategoryController = TextEditingController();
+  final TextEditingController _categoryName = TextEditingController();
+  final TextEditingController _categoryColor = TextEditingController();
+
 
   // Almacena la categoría seleccionada
   String _selectedCategory = 'Selecciona Categoría';
@@ -35,6 +38,7 @@ class _AddFoodState extends State<AddFood> {
   String? _selectedIcon;
 
   final DBFood dbFood = DBFood();
+  final DBFeatures dbFeature = DBFeatures();
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +185,7 @@ class _AddFoodState extends State<AddFood> {
 
                     await dbFood.addNewFood(newFood);
 
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Alimento agregado')),
                     );
@@ -264,7 +269,7 @@ class _AddFoodState extends State<AddFood> {
               children: [
                 // Campo de texto para el nombre de la categoría
                 TextField(
-                  controller: _newCategoryController,
+                  controller: _categoryName,
                   decoration: const InputDecoration(
                     hintText: 'Nombre de la categoría',
                   ),
@@ -326,13 +331,28 @@ class _AddFoodState extends State<AddFood> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                if (_newCategoryController.text.isNotEmpty &&
+              onPressed: () async {
+                if (_categoryName.text.isNotEmpty &&
                     _selectedIcon != null) {
+                  CategoryModel newCategory = CategoryModel(
+                    categoryName: _categoryName.text,
+                    color: _categoryColor.text,
+                    icon: _selectedIcon!, // Elige el icono seleccionado
+                  );
+
+                  await dbFeature.addNewFeature(newCategory);
+
                   setState(() {
-                    _categories.add(_newCategoryController.text);
-                    _selectedCategory = _newCategoryController.text;
+                    _categories.add(newCategory.categoryName);
+                    _selectedCategory = newCategory.categoryName;
                   });
+
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Categoría creada')),
+                  );
+
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context);
                 }
               },

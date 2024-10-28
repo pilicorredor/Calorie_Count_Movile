@@ -11,6 +11,7 @@ class Food {
   String unit;
   double calories;
   String createdAt;
+  int? categoryId;
 
   Food({
     this.id,
@@ -19,6 +20,7 @@ class Food {
     this.unit = '',
     this.calories = 0.0,
     this.createdAt = '',
+    this.categoryId = 0,
   });
 
   @override
@@ -33,6 +35,7 @@ class Food {
         unit: json["unit"],
         calories: json["calories"],
         createdAt: json["createdAt"],
+        categoryId: json["categoryId"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -42,5 +45,6 @@ class Food {
         "unit": unit,
         "calories": calories,
         "createdAt": createdAt,
+        "categoryId": categoryId,
       };
 }

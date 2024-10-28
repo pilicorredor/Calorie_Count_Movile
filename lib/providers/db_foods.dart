@@ -26,7 +26,9 @@ class DBFood {
         quantity DOUBLE,
         unit TEXT,
         calories DOUBLE,
-        createdAt TEXT
+        createdAt TEXT,
+        categoryId INTEGER,
+        FOREIGN KEY (categoryId) REFERENCES Feature(id)
         )
         ''');
     });
@@ -57,6 +59,19 @@ class DBFood {
       where: 'createdAt = ?',
       whereArgs: [date],
     );
+
+    List<Food> fList = response.isNotEmpty
+        ? response.map((e) => Food.fromJson(e)).toList()
+        : [];
+
+    return fList;
+  }
+
+  // Método para obtener comidas de una categoría específica
+  Future<List<Food>> getFoodsByCategory(int categoryId) async {
+    final db = await database;
+    final response = await db
+        .query('Food', where: 'categoryId = ?', whereArgs: [categoryId]);
 
     List<Food> fList = response.isNotEmpty
         ? response.map((e) => Food.fromJson(e)).toList()

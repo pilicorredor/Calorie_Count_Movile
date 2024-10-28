@@ -57,7 +57,7 @@ class CategoryDetailPage extends StatelessWidget {
                 return ListTile(
                   title: Text(food.name),
                   subtitle: Text(
-                      'Cantidad: ${food.quantity} ${food.unit}, Calorías: ${food.calories}, Fecha de Creación: ${food.createdAt}'),
+                      'Cantidad: ${food.quantity} ${food.unit}, Calorías: ${food.calories}, Fecha de Creación: ${food.createdAt}, Categoría: ${food.categoryId}'),
                 );
               },
             );

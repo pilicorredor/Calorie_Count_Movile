@@ -2,10 +2,8 @@ import 'package:calorie_counter/models/category_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class DBFEatures {
+class DBFeatures {
   static Database? _database;
-  static final DBFEatures db = DBFEatures._();
-  DBFEatures._();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -22,7 +20,7 @@ class DBFEatures {
     return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute('''
-        CREATE TABLE Feature (
+        CREATE TABLE IF NOT EXISTS Feature (
         id INTEGER PRIMARY KEY,
         category TEXT,
         color TEXT,
