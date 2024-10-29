@@ -191,8 +191,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        // builder: (context) => CategoryDetailPage(categoryName: categoryName),
-        builder: (context) => CategoryDetailPage(selectedDate: selectedDate),
+        builder: (context) => CategoryDetailPage(selectedDate: selectedDate, categoryName: categoryName),
       ),
     );
   }

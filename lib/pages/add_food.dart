@@ -1,5 +1,5 @@
+import 'package:calorie_counter/models/Food.dart';
 import 'package:calorie_counter/models/category_model.dart';
-import 'package:calorie_counter/models/food.dart';
 import 'package:calorie_counter/providers/db_category.dart';
 import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:calorie_counter/utils/constants.dart';
@@ -28,7 +28,6 @@ class _AddFoodState extends State<AddFood> {
   final TextEditingController _caloriesController = TextEditingController();
   final TextEditingController _categoryName = TextEditingController();
   final TextEditingController _categoryColor = TextEditingController();
-
 
   // Almacena la categoría seleccionada
   String _selectedCategory = 'Selecciona Categoría';
@@ -175,13 +174,13 @@ class _AddFoodState extends State<AddFood> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     Food newFood = Food(
-                      name: _foodNameController.text,
-                      quantity: double.parse(_quantityController.text),
-                      unit: _selectedUnit,
-                      calories: double.parse(_caloriesController.text),
-                      createdAt:
-                          DateFormat('dd/MM/yyyy').format(widget.selectedDate),
-                    );
+                        name: _foodNameController.text,
+                        quantity: double.parse(_quantityController.text),
+                        unit: _selectedUnit,
+                        calories: double.parse(_caloriesController.text),
+                        createdAt: DateFormat('dd/MM/yyyy')
+                            .format(widget.selectedDate),
+                        categoryName: _selectedCategory);
 
                     await dbFood.addNewFood(newFood);
 
@@ -212,13 +211,13 @@ class _AddFoodState extends State<AddFood> {
 
   void _selectCategory() {
     final categoryList =
-        CategoryList().catList; // Obtener la lista de categorías
+        CategoryList().catList; 
 
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Column(
-          mainAxisSize: MainAxisSize.min, // Para que el modal ajuste su tamaño
+          mainAxisSize: MainAxisSize.min, 
           children: [
             Expanded(
               child: ListView.builder(
@@ -246,8 +245,8 @@ class _AddFoodState extends State<AddFood> {
               leading: const Icon(Icons.add),
               title: const Text('Crear nueva categoría'),
               onTap: () {
-                Navigator.pop(context); // Cierra el modal
-                _showCreateCategoryDialog(); // Muestra el diálogo para crear una nueva categoría
+                Navigator.pop(context);
+                _showCreateCategoryDialog();
               },
             ),
           ],
@@ -332,8 +331,7 @@ class _AddFoodState extends State<AddFood> {
           actions: [
             TextButton(
               onPressed: () async {
-                if (_categoryName.text.isNotEmpty &&
-                    _selectedIcon != null) {
+                if (_categoryName.text.isNotEmpty && _selectedIcon != null) {
                   CategoryModel newCategory = CategoryModel(
                     categoryName: _categoryName.text,
                     color: _categoryColor.text,

@@ -11,7 +11,7 @@ class Food {
   String unit;
   double calories;
   String createdAt;
-  int? categoryId;
+  String categoryName;
 
   Food({
     this.id,
@@ -20,12 +20,12 @@ class Food {
     this.unit = '',
     this.calories = 0.0,
     this.createdAt = '',
-    this.categoryId = 0,
+    this.categoryName = '',
   });
 
   @override
   String toString() {
-    return 'Food(name: $name, quantity: $quantity, unit: $unit, calories: $calories)';
+    return 'Food(name: $name, quantity: $quantity, unit: $unit, calories: $calories, categoryName: $categoryName)';
   }
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -35,7 +35,7 @@ class Food {
         unit: json["unit"],
         calories: json["calories"],
         createdAt: json["createdAt"],
-        categoryId: json["categoryId"],
+        categoryName: json["categoryName"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -45,6 +45,6 @@ class Food {
         "unit": unit,
         "calories": calories,
         "createdAt": createdAt,
-        "categoryId": categoryId,
+        "categoryName": categoryName,
       };
 }

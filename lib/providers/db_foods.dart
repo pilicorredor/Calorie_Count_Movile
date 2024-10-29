@@ -1,4 +1,4 @@
-import 'package:calorie_counter/models/food.dart';
+import 'package:calorie_counter/models/Food.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -17,9 +17,11 @@ class DBFood {
     var dataBasePath = await getDatabasesPath();
     String path = join(dataBasePath, "DBFood.db");
 
-    return await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-      await db.execute('''
+    return await openDatabase(
+      path,
+      version: 3, // Cambiamos la versión de 1 a 2
+      onCreate: (Database db, int version) async {
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS Food (
         id INTEGER PRIMARY KEY,
         name TEXT,
@@ -27,11 +29,16 @@ class DBFood {
         unit TEXT,
         calories DOUBLE,
         createdAt TEXT,
-        categoryId INTEGER,
-        FOREIGN KEY (categoryId) REFERENCES Feature(id)
+        categoryName TEXT
         )
-        ''');
-    });
+      ''');
+      },
+      onUpgrade: (Database db, int oldVersion, int newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE Food ADD COLUMN categoryName TEXT');
+        }
+      },
+    );
   }
 
   addNewFood(Food food) async {
@@ -68,10 +75,26 @@ class DBFood {
   }
 
   // Método para obtener comidas de una categoría específica
-  Future<List<Food>> getFoodsByCategory(int categoryId) async {
+  Future<List<Food>> getFoodsByCategory(String categoryName) async {
     final db = await database;
     final response = await db
-        .query('Food', where: 'categoryId = ?', whereArgs: [categoryId]);
+        .query('Food', where: 'categoryName = ?', whereArgs: [categoryName]);
+
+    List<Food> fList = response.isNotEmpty
+        ? response.map((e) => Food.fromJson(e)).toList()
+        : [];
+
+    return fList;
+  }
+
+  Future<List<Food>> getFoodsByCategoryAndDate(
+      String categoryName, String date) async {
+    final db = await database;
+    final response = await db.query(
+      'Food',
+      where: 'categoryName = ? AND createdAt = ?',
+      whereArgs: [categoryName, date],
+    );
 
     List<Food> fList = response.isNotEmpty
         ? response.map((e) => Food.fromJson(e)).toList()
