@@ -16,6 +16,7 @@ class AddFood extends StatefulWidget {
 
 class _AddFoodState extends State<AddFood> {
   final _formKey = GlobalKey<FormState>();
+  
   var catList = CategoryList().catList;
   
   // Controladores para los campos de texto
