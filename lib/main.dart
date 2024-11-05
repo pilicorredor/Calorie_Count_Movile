@@ -1,6 +1,7 @@
 import 'package:calorie_counter/pages/home_page.dart';
 import 'package:calorie_counter/pages/login_page.dart'; // Importa la página de Login
 import 'package:calorie_counter/pages/sign_up_page.dart';
+import 'package:calorie_counter/permissions/permissions_screen.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           'login': (_) => const LoginPage(), // Agrega la ruta para LoginPage
           'home': (_) => const HomePage(),   // Ruta para HomePage
           'SingUp': (_) => const SignUpPage(),
+          '/permissions': (_) => const PermissionsScreen() 
         },
       ),
     );
