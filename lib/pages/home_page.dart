@@ -1,8 +1,10 @@
+import 'package:calorie_counter/models/Food.dart';
 import 'package:calorie_counter/models/category_model.dart';
 import 'package:calorie_counter/pages/category_detail_page.dart'; // Asegúrate de importar la nueva pantalla
 import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
+import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
@@ -11,6 +13,7 @@ import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   List<CategoryModel> categories = CategoryList().getAllCategories();
   int lengthCategories = CategoryList().getLenghtCategories();
   DateTime selectedDate = DateTime.now();
+  final DBFood dbFood = DBFood();
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +145,31 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  FutureBuilder<double>(
+                    future: getCaloriesForSelectedDate(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text(
+                          'Calculando calorías...',
+                          style: TextStyle(fontSize: 18),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Text(
+                          'Error al obtener las calorías',
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        );
+                      } else {
+                        final caloriesForDay = snapshot.data ?? 0.0;
+                        return Text(
+                          'Calorías consumidas este día: ${caloriesForDay.toStringAsFixed(1)} kcal',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }
+                    },
+                  ),
                   const Text(
                     'Categorías',
                     style: TextStyle(
@@ -191,8 +220,17 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CategoryDetailPage(selectedDate: selectedDate, categoryName: categoryName),
+        builder: (context) => CategoryDetailPage(
+            selectedDate: selectedDate, categoryName: categoryName),
       ),
     );
+  }
+
+  // Método para obtener calorías del día seleccionado
+  Future<double> getCaloriesForSelectedDate() async {
+    String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
+    List<Food> foods = await dbFood.getFoodsByDate(formattedDate);
+    double totalCalories = foods.fold(0, (sum, food) => sum + food.calories);
+    return totalCalories;
   }
 }
