@@ -12,7 +12,6 @@ import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -57,6 +56,7 @@ class _HomePageState extends State<HomePage> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
+                  //Navigator.pushNamed(context, 'permissions'); 
                   Navigator.pushReplacementNamed(context, '/permissions');
                   //context.push('/permissions');
                 },
