@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:calorie_counter/models/Food.dart';
 import 'package:calorie_counter/models/category_model.dart';
 import 'package:calorie_counter/providers/db_category.dart';
@@ -9,6 +11,7 @@ import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddFood extends StatefulWidget {
   final DateTime selectedDate;
@@ -21,6 +24,8 @@ class AddFood extends StatefulWidget {
 class _AddFoodState extends State<AddFood> {
   final _formKey = GlobalKey<FormState>();
   var catList = CategoryList().catList;
+  final ImagePicker _picker = ImagePicker();
+  XFile? _selectedImage;
 
   // Controladores para los campos de texto
   final TextEditingController _foodNameController = TextEditingController();
@@ -39,6 +44,15 @@ class _AddFoodState extends State<AddFood> {
   final DBFood dbFood = DBFood();
   final DBFeatures dbFeature = DBFeatures();
 
+  Future<void> _selectImage() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery, // Cambia a ImageSource.camera para abrir la cámara
+    );
+    setState(() {
+      _selectedImage = pickedFile;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,23 +65,16 @@ class _AddFoodState extends State<AddFood> {
           key: _formKey,
           child: ListView(
             children: [
-              // Campo para seleccionar una imagen
               GestureDetector(
-                onTap: () {
-                  // Aquí iría el código para seleccionar una imagen
-                },
+                onTap: _selectImage,
                 child: Container(
                   height: 150,
                   color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.add_a_photo,
-                    size: 50,
-                    color: Colors.grey,
-                  ),
+                  child: _selectedImage != null
+                      ? Image.file(File(_selectedImage!.path))
+                      : const Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
                 ),
               ),
-              const SizedBox(height: 16.0),
-
               // Campo de texto para el nombre del alimento
               TextFormField(
                 controller: _foodNameController,
