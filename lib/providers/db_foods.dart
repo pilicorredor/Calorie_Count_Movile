@@ -18,7 +18,7 @@ class DBFood {
     String path = join(dataBasePath, "DBFood.db");
 
       // Elimina la base de datos si ya existe (forzar la recreación)
-     //await deleteDatabase(path); // Asegúrate de proporcionar la ruta correcta
+     //await deleteDatabase(path); 
 
 
   return await openDatabase(
