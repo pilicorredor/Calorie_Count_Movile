@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddRecipes extends StatefulWidget {
   const AddRecipes({super.key});
@@ -9,11 +12,23 @@ class AddRecipes extends StatefulWidget {
 
 class _AddRecipes extends State<AddRecipes> {
   final _formKey = GlobalKey<FormState>();
+    final ImagePicker _picker = ImagePicker();
+  XFile? _selectedImage;
 
   // Controladores para los campos de texto
   final TextEditingController _recipeNameController = TextEditingController();
   final TextEditingController _ingredientsController = TextEditingController();
   final TextEditingController _preparationStepsController = TextEditingController();
+
+
+  Future<void> _selectImageRecipe() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery, // Cambia a ImageSource.camera para abrir la cámara
+    );
+    setState(() {
+      _selectedImage = pickedFile;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,17 +44,13 @@ class _AddRecipes extends State<AddRecipes> {
             children: [
               // Campo para seleccionar una imagen
               GestureDetector(
-                onTap: () {
-                  // Aquí iría el código para seleccionar una imagen
-                },
+                onTap: _selectImageRecipe,
                 child: Container(
                   height: 150,
                   color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.add_a_photo,
-                    size: 50,
-                    color: Colors.grey,
-                  ),
+                  child: _selectedImage != null
+                      ? Image.file(File(_selectedImage!.path))
+                      : const Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 16.0),

@@ -23,7 +23,7 @@ class ChartsPage extends StatelessWidget {
               const SizedBox(height: 16.0),
               CustomLinearChart(spotsList: weightData),
               const SizedBox(height: 16.0),
-              const CustomTitleCard( label: 'Calorías consumidad diariamente',),
+              const CustomTitleCard( label: 'Calorías consumidas diariamente',),
               const SizedBox(height: 16.0),
               CustomLinearChart(spotsList: caloriesData),
 
