@@ -13,10 +13,10 @@ class CustomNavigationBar extends StatelessWidget {
       currentIndex: uiProvider.bnbIndex,
       onTap: (int i) => uiProvider.bnbIndex = i,
       
-      type: BottomNavigationBarType.fixed, // Fuerza el modo fijo para mostrar los íconos correctamente
+      type: BottomNavigationBarType.fixed, 
       items: const [
         BottomNavigationBarItem(label: 'Inicio', icon: Icon(Icons.home)),
-        BottomNavigationBarItem(label: 'Favoritos', icon: Icon(Icons.favorite)),
+        BottomNavigationBarItem(label: 'Recetas', icon: Icon(Icons.receipt)),
         BottomNavigationBarItem(label: 'Gráficos', icon: Icon(Icons.bar_chart_outlined)),
         BottomNavigationBarItem(label: 'Usuario', icon: Icon(Icons.person)),
     ]);

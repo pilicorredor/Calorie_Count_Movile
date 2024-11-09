@@ -17,36 +17,47 @@ class DBFood {
     var dataBasePath = await getDatabasesPath();
     String path = join(dataBasePath, "DBFood.db");
 
-    return await openDatabase(
-      path,
-      version: 3, // Cambiamos la versión de 1 a 2
-      onCreate: (Database db, int version) async {
-        await db.execute('''
-        CREATE TABLE IF NOT EXISTS Food (
+      // Elimina la base de datos si ya existe (forzar la recreación)
+     //await deleteDatabase(path); // Asegúrate de proporcionar la ruta correcta
+
+
+  return await openDatabase(
+    'food_database.db',
+    version: 4, // Incrementa la versión si es necesario
+    onCreate: (db, version) async {
+      // Crea la tabla si es la primera vez
+      await db.execute('''
+      CREATE TABLE Food (
         id INTEGER PRIMARY KEY,
         name TEXT,
         quantity DOUBLE,
         unit TEXT,
         calories DOUBLE,
         createdAt TEXT,
-        categoryName TEXT
-        )
+        categoryName TEXT,
+        imagePath TEXT
+      )
       ''');
-      },
-      onUpgrade: (Database db, int oldVersion, int newVersion) async {
-        if (oldVersion < 2) {
-          await db.execute('ALTER TABLE Food ADD COLUMN categoryName TEXT');
-        }
-      },
-    );
-  }
+    },
+    onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < 4) {
+        // Realiza la migración de la base de datos (si es necesario)
+        await db.execute('''
+          ALTER TABLE Food ADD COLUMN imagePath TEXT
+        ''');
+      }
+    },
+  );
+}
 
   addNewFood(Food food) async {
     final db = await database;
-    final response = db.insert('Food', food.toJson());
+    final response = await db.insert(
+      'Food',
+      food.toJson(), // Usamos food.toJson() para agregar el objeto Food a la base de datos
+    );
     return response;
   }
-
   Future<List<Food>> getAllFoods() async {
     final db = await database;
     final response = await db.query('Food');

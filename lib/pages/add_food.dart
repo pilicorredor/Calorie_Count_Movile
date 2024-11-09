@@ -206,31 +206,44 @@ class _AddFoodState extends State<AddFood> {
               ElevatedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+                    // Si hay imagen seleccionada, guarda su ruta como texto
+                    String imagePath = _selectedImage != null ? _selectedImage!.path : '';
+
                     Food newFood = Food(
-                        name: _foodNameController.text,
-                        quantity: double.parse(_quantityController.text),
-                        unit: _selectedUnit,
-                        calories: double.parse(_caloriesController.text),
-                        createdAt: DateFormat('dd/MM/yyyy')
-                            .format(widget.selectedDate),
-                        categoryName: _selectedCategory);
+                      name: _foodNameController.text,
+                      quantity: double.parse(_quantityController.text),
+                      unit: _selectedUnit,
+                      calories: double.parse(_caloriesController.text),
+                      createdAt: DateFormat('dd/MM/yyyy').format(widget.selectedDate),
+                      categoryName: _selectedCategory,
+                      imagePath: imagePath,  // Almacena la ruta de la imagen como texto
+                    );
 
-                    await dbFood.addNewFood(newFood);
+                  print('Alimento a agregar: $newFood'); // Verifica los datos que se están pasando
+                  await dbFood.addNewFood(newFood);
 
-                    // ignore: use_build_context_synchronously
+                    // Verifica si el alimento fue agregado correctamente
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Alimento agregado')),
                     );
 
+                    // Limpia los campos después de guardar
                     _foodNameController.clear();
                     _quantityController.clear();
                     _caloriesController.clear();
+                    _categoryName.clear();
+
+                    // Limpia la imagen
                     setState(() {
+                      _selectedImage = null; // Limpia la imagen seleccionada
                       _selectedUnit = 'gramos';
                       _selectedCategory = 'Selecciona Categoría';
                     });
                   }
+                  List<Food> foods = await dbFood.getAllFoods();
+                  print('Todos los alimentos: $foods');
                 },
+
                 icon: const Icon(Icons.add),
                 label: const Text('Agregar'),
               ),
