@@ -8,10 +8,17 @@ class PermissionsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Permisos'),
+      appBar: AppBar(
+        title: const Text('Permisos'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, 'home');
+          },
         ),
-        body: const _PermissionsView());
+      ),
+      body: const _PermissionsView(),
+    );
   }
 }
 

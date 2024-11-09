@@ -12,7 +12,8 @@ class PermissionsNotifier extends StateNotifier<PermissionsState> {
   Future<void> checkPermissions() async {
     final permissionsArray = await Future.wait([
       Permission.camera.status,
-      Permission.photos.status,
+      //Permission.photos.status,
+      Permission.storage.status,
       Permission.sensors.status,
       Permission.location.status,
       Permission.locationAlways.status,
@@ -45,13 +46,19 @@ class PermissionsNotifier extends StateNotifier<PermissionsState> {
     _checkPermissionState(status);
   }
 
-  requestPhotoLibraryAccess() async {
+ /* requestPhotoLibraryAccess() async {
     final status = await Permission.photos.request();
     state = state.copyWith(photoLibrary: status);
 
     _checkPermissionState(status);
   }
+  */
+  requestPhotoLibraryAccess() async {
+    final status = await Permission.storage.request(); // Cambiado a storage
+    state = state.copyWith(photoLibrary: status);
 
+    _checkPermissionState(status);
+  }
   requestLocationAccess() async {
     final status = await Permission.location.request();
     state = state.copyWith(location: status);
