@@ -45,12 +45,38 @@ class _AddFoodState extends State<AddFood> {
   final DBFeatures dbFeature = DBFeatures();
 
   Future<void> _selectImage() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery, // Cambia a ImageSource.camera para abrir la cámara
+    // Mostrar diálogo de selección
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleccionar opción'),
+          content: const Text('Elige si deseas tomar una foto o seleccionarla de la galería.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                setState(() {
+                  _selectedImage = pickedFile;
+                });
+              },
+              child: const Text('Tomar foto'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                setState(() {
+                  _selectedImage = pickedFile;
+                });
+              },
+              child: const Text('Seleccionar de galería'),
+            ),
+          ],
+        );
+      },
     );
-    setState(() {
-      _selectedImage = pickedFile;
-    });
   }
 
   @override
