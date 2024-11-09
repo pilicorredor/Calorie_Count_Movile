@@ -12,6 +12,7 @@ class Food {
   double calories;
   String createdAt;
   String categoryName;
+  String? imagePath;  // Nueva propiedad para la foto
 
   Food({
     this.id,
@@ -21,11 +22,12 @@ class Food {
     this.calories = 0.0,
     this.createdAt = '',
     this.categoryName = '',
+    this.imagePath, // Inicialización del nuevo parámetro
   });
 
   @override
   String toString() {
-    return 'Food(name: $name, quantity: $quantity, unit: $unit, calories: $calories, categoryName: $categoryName)';
+    return 'Food(name: $name, quantity: $quantity, unit: $unit, calories: $calories, categoryName: $categoryName, imagePath: $imagePath)';
   }
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -36,6 +38,7 @@ class Food {
         calories: json["calories"],
         createdAt: json["createdAt"],
         categoryName: json["categoryName"],
+        imagePath: json["imagePath"],  // Añadir el campo de la imagen
       );
 
   Map<String, dynamic> toJson() => {
@@ -46,5 +49,6 @@ class Food {
         "calories": calories,
         "createdAt": createdAt,
         "categoryName": categoryName,
+        "imagePath": imagePath,  // Añadir el campo de la imagen
       };
 }

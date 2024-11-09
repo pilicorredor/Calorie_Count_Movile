@@ -8,7 +8,7 @@ class FavoritesPage extends StatelessWidget {
     // Lista de alimentos favoritos con imágenes y calorías
     final List<Map<String, dynamic>> favoriteFoods = [
       {
-        'name': 'Manzana',
+        'name': 'Limonada Cerezada',
         'calories': 95,
         'image': 'https://via.placeholder.com/150'
       },
@@ -18,15 +18,14 @@ class FavoritesPage extends StatelessWidget {
         'image': 'https://via.placeholder.com/150'
       },
       {
-        'name': 'Ensalada',
-        'calories': 80,
+        'name': 'Ensalada de frutas',
         'image': 'https://via.placeholder.com/150'
       },
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favoritos'),
+        title: const Text('Recetas'),
       ),
       body: ListView.builder(
         itemCount: favoriteFoods.length,

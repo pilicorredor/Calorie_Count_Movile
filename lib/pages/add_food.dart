@@ -45,12 +45,38 @@ class _AddFoodState extends State<AddFood> {
   final DBFeatures dbFeature = DBFeatures();
 
   Future<void> _selectImage() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery, // Cambia a ImageSource.camera para abrir la cámara
+    // Mostrar diálogo de selección
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleccionar opción'),
+          content: const Text('Elige si deseas tomar una foto o seleccionarla de la galería.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                setState(() {
+                  _selectedImage = pickedFile;
+                });
+              },
+              child: const Text('Tomar foto'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                setState(() {
+                  _selectedImage = pickedFile;
+                });
+              },
+              child: const Text('Seleccionar de galería'),
+            ),
+          ],
+        );
+      },
     );
-    setState(() {
-      _selectedImage = pickedFile;
-    });
   }
 
   @override
@@ -180,31 +206,44 @@ class _AddFoodState extends State<AddFood> {
               ElevatedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+                    // Si hay imagen seleccionada, guarda su ruta como texto
+                    String imagePath = _selectedImage != null ? _selectedImage!.path : '';
+
                     Food newFood = Food(
-                        name: _foodNameController.text,
-                        quantity: double.parse(_quantityController.text),
-                        unit: _selectedUnit,
-                        calories: double.parse(_caloriesController.text),
-                        createdAt: DateFormat('dd/MM/yyyy')
-                            .format(widget.selectedDate),
-                        categoryName: _selectedCategory);
+                      name: _foodNameController.text,
+                      quantity: double.parse(_quantityController.text),
+                      unit: _selectedUnit,
+                      calories: double.parse(_caloriesController.text),
+                      createdAt: DateFormat('dd/MM/yyyy').format(widget.selectedDate),
+                      categoryName: _selectedCategory,
+                      imagePath: imagePath,  // Almacena la ruta de la imagen como texto
+                    );
 
-                    await dbFood.addNewFood(newFood);
+                  print('Alimento a agregar: $newFood'); // Verifica los datos que se están pasando
+                  await dbFood.addNewFood(newFood);
 
-                    // ignore: use_build_context_synchronously
+                    // Verifica si el alimento fue agregado correctamente
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Alimento agregado')),
                     );
 
+                    // Limpia los campos después de guardar
                     _foodNameController.clear();
                     _quantityController.clear();
                     _caloriesController.clear();
+                    _categoryName.clear();
+
+                    // Limpia la imagen
                     setState(() {
+                      _selectedImage = null; // Limpia la imagen seleccionada
                       _selectedUnit = 'gramos';
                       _selectedCategory = 'Selecciona Categoría';
                     });
                   }
+                  List<Food> foods = await dbFood.getAllFoods();
+                  print('Todos los alimentos: $foods');
                 },
+
                 icon: const Icon(Icons.add),
                 label: const Text('Agregar'),
               ),
