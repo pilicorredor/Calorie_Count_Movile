@@ -8,8 +8,10 @@ import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
+import 'package:calorie_counter/widgets/home_page/calories_display_widget.dart';
 import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
+import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -153,31 +155,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  FutureBuilder<double>(
-                    future: getCaloriesForSelectedDate(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Text(
-                          'Calculando calorías...',
-                          style: TextStyle(fontSize: 18),
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Text(
-                          'Error al obtener las calorías',
-                          style: TextStyle(fontSize: 18, color: Colors.red),
-                        );
-                      } else {
-                        final caloriesForDay = snapshot.data ?? 0.0;
-                        return Text(
-                          'Calorías consumidas este día: ${caloriesForDay.toStringAsFixed(1)} kcal',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      }
-                    },
-                  ),
+                  CaloriesDisplayWidget(futureCalories: getCaloriesForSelectedDate()),
+                  const StepCounterWidget(),
                   const Text(
                     'Categorías',
                     style: TextStyle(
