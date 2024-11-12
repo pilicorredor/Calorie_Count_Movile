@@ -14,6 +14,7 @@ import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 20),
                   CaloriesDisplayWidget(futureCalories: getCaloriesForSelectedDate()),
-                  const StepCounterWidget(),
+                  StepCounterWidget(date: getStringSelectedDate()),
                   const Text(
                     'Categorías',
                     style: TextStyle(
@@ -215,9 +216,11 @@ class _HomePageState extends State<HomePage> {
 
   // Método para obtener calorías del día seleccionado
   Future<double> getCaloriesForSelectedDate() async {
-    String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
-    List<Food> foods = await dbFood.getFoodsByDate(formattedDate);
+    List<Food> foods = await dbFood.getFoodsByDate(getStringSelectedDate());
     double totalCalories = foods.fold(0, (sum, food) => sum + food.calories);
     return totalCalories;
+  }
+  String getStringSelectedDate()  {
+    return  DateFormat('dd/MM/yyyy').format(selectedDate);
   }
 }
