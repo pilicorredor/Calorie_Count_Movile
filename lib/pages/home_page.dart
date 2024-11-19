@@ -5,6 +5,7 @@ import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/providers/db_foods.dart';
+import 'package:calorie_counter/providers/db_steps.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
@@ -15,6 +16,7 @@ import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -31,12 +33,29 @@ class _HomePageState extends State<HomePage> {
   int lengthCategories = CategoryList().getLenghtCategories();
   DateTime selectedDate = DateTime.now();
   final DBFood dbFood = DBFood();
+  final DBSteps dbSteps = DBSteps();
+  final Logger _logger = Logger();
+  List<Map<String, dynamic>> stepData = [
+    {'date': '01/11/2024', 'step_count': 1200},
+    {'date': '02/11/2024', 'step_count': 1300},
+    {'date': '03/11/2024', 'step_count': 1250},
+    {'date': '04/11/2024', 'step_count': 1600},
+    // Agrega más datos según necesites
+    ];
+        Future<void> cargarDatosDesdeLista() async {
+      for (var data in stepData) {
+        String date = data['date'];
+        int stepCount = data['step_count'];
+        _logger.d("Se cargo unos pasos para la fecha $date");
+        await dbSteps.addSteps(date, stepCount);
+      }
+    }
 
   @override
   Widget build(BuildContext context) {
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
-
+    //cargarDatosDesdeLista();
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
@@ -157,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 20),
                   CaloriesDisplayWidget(futureCalories: getCaloriesForSelectedDate()),
-                  StepCounterWidget(date: getStringSelectedDate()),
+                  StepCounterWidget(futureSteps: getStepsForSelectedDate()),
                   const Text(
                     'Categorías',
                     style: TextStyle(
@@ -219,6 +238,11 @@ class _HomePageState extends State<HomePage> {
     List<Food> foods = await dbFood.getFoodsByDate(getStringSelectedDate());
     double totalCalories = foods.fold(0, (sum, food) => sum + food.calories);
     return totalCalories;
+  }
+
+  Future<int> getStepsForSelectedDate() async {
+    int steps = await dbSteps.getStepsByDate(getStringSelectedDate());
+    return steps;
   }
   String getStringSelectedDate()  {
     return  DateFormat('dd/MM/yyyy').format(selectedDate);

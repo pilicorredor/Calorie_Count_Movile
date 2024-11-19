@@ -1,132 +1,84 @@
 import 'dart:async';
-import 'package:calorie_counter/providers/db_steps.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-import 'package:pedometer/pedometer.dart';
-import 'package:intl/intl.dart';
 
-class StepCounterWidget extends StatefulWidget {
-  final String date;
+class StepCounterWidget extends StatelessWidget {
+  final Future<int> futureSteps;
 
-  const StepCounterWidget({super.key, required this.date});
+  const StepCounterWidget({super.key, required this.futureSteps});
 
   @override
-  State<StepCounterWidget> createState() => _StepCounterWidgetState();
-}
-
-class _StepCounterWidgetState extends State<StepCounterWidget> {
-  int _stepCount = 0;
-  int _stepsSinceLastSave = 0;
-  final Logger _logger = Logger();
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadStepsForDate(widget.date);
-    if (_isToday(widget.date)) {
-      _initializeStepListener();
-      _startPeriodicSave();
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  bool _isToday(String date) {
-    final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    return date == today;
-  }
-
-  Future<void> _loadStepsForDate(String date) async {
-    final stepsForDate = await StepsDatabase.instance.getStepsByDate(date);
-    if (stepsForDate.isNotEmpty) {
-      setState(() => _stepCount = stepsForDate.first.stepCount);
-    }
-  }
-
-  Future<void> _initializeStepListener() async {
-    Pedometer.stepCountStream.listen(
-      (event) {
-        _logger.d("Número de pasos detectados: ${event.steps}");
-
-        // Calcular pasos desde la última actualización
-        int newSteps = event.steps - _stepCount;
-        _stepsSinceLastSave += newSteps;
-
-        setState(() => _stepCount = event.steps);
-      },
-      onError: (error) {
-        _logger.e("Error en el sensor de pasos: $error");
+  Widget build(BuildContext context) {
+    return FutureBuilder<int>(
+      future: futureSteps,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildCard(
+            child: const Text(
+              'Contando pasos...',
+              style: TextStyle(fontSize: 18, color: Colors.blueGrey),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return _buildCard(
+            child: const Text(
+              'Error al obtener los pasos',
+              style: TextStyle(fontSize: 18, color: Colors.redAccent),
+            ),
+          );
+        } else {
+          final stepsForDay = snapshot.data ?? 0;
+          return _buildCard(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.directions_walk,
+                  color: Colors.blueAccent,
+                  size: 40,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Pasos de hoy',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$stepsForDay',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
       },
     );
   }
 
-  void _startPeriodicSave() {
-    _timer = Timer.periodic(Duration(minutes: 5), (timer) async {
-      if (_stepsSinceLastSave > 0) {
-        await _saveSteps();
-        _stepsSinceLastSave = 0; // Reinicia el conteo de pasos desde la última guardada
-      }
-    });
-  }
-
-  Future<void> _saveSteps() async {
-    String today = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    await StepsDatabase.instance.updateStepsForDate(today, _stepCount);
-    _logger.d("Pasos guardados en la base de datos: $_stepCount");
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  // Método para construir la tarjeta con un diseño moderno
+  Widget _buildCard({required Widget child}) {
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.blueAccent,
-        borderRadius: BorderRadius.circular(16.0),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.grey.withOpacity(0.3),
             blurRadius: 10,
-            spreadRadius: 1,
             offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.directions_walk,
-            size: 60,
-            color: Colors.white,
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Pasos diarios:',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            _stepCount > 0 ? '$_stepCount' : 'Sensor no disponible o sin actividad',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+      child: Center(child: child),
     );
   }
 }
