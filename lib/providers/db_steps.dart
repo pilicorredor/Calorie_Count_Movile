@@ -19,7 +19,7 @@ class DBSteps {
 
     return await openDatabase(
       path,
-      version: 5, // Incrementa la versión si es necesario
+      version: 6, // Incrementa la versión si es necesario
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 5) {
           // Crea la tabla Steps si aún no existe
@@ -27,7 +27,8 @@ class DBSteps {
             CREATE TABLE Steps (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               date TEXT NOT NULL,
-              stepCount INTEGER NOT NULL
+              initialCount INTEGER NOT NULL,
+              finalCount INTEGER NOT NULL
             )
           ''');
         }
@@ -36,12 +37,12 @@ class DBSteps {
   }
 
   /// Agregar pasos para una fecha específica
-  Future<void> addSteps(String date, int stepCount) async {
+  Future<void> addSteps(String date, int initialCount, int finalCount) async {
     final db = await database;
 
     int a = await db.insert(
       'Steps',
-      {'date': date, 'stepCount': stepCount},
+      {'date': date, 'initialCount': initialCount, 'finalCount': finalCount},
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     _logger.d("$a");
@@ -57,15 +58,12 @@ class DBSteps {
     );
 
     if (result.isNotEmpty) {
-      return result.first['stepCount'] as int;
+      int iCount = result.first['initialCount'] as int;
+      int fCount = result.first['finalCount'] as int;
+      return fCount-iCount;
     }
 
     return 0; // Devuelve 0 si no hay registros
   }
 
-  /// Obtener todo el historial de pasos
-  Future<List<Map<String, dynamic>>> getStepHistory() async {
-    final db = await database;
-    return await db.query('Steps', orderBy: 'date DESC');
-  }
 }

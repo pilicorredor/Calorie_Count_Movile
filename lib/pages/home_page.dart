@@ -15,7 +15,6 @@ import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -36,18 +35,19 @@ class _HomePageState extends State<HomePage> {
   final DBSteps dbSteps = DBSteps();
   final Logger _logger = Logger();
   List<Map<String, dynamic>> stepData = [
-    {'date': '01/11/2024', 'step_count': 1200},
-    {'date': '02/11/2024', 'step_count': 1300},
-    {'date': '03/11/2024', 'step_count': 1250},
-    {'date': '04/11/2024', 'step_count': 1600},
+    {'date': '01/11/2024', 'i_count': 0, 'f_count': 1200},
+    {'date': '02/11/2024', 'i_count': 0,'f_count': 1300},
+    {'date': '03/11/2024', 'i_count': 0,'f_count': 1250},
+    {'date': '04/11/2024', 'i_count': 0,'f_count': 1600},
     // Agrega más datos según necesites
     ];
         Future<void> cargarDatosDesdeLista() async {
       for (var data in stepData) {
         String date = data['date'];
-        int stepCount = data['step_count'];
+        int iCount = data['i_count'];
+        int fCount = data['f_count'];
         _logger.d("Se cargo unos pasos para la fecha $date");
-        await dbSteps.addSteps(date, stepCount);
+        await dbSteps.addSteps(date, iCount,fCount);
       }
     }
 
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
-    //cargarDatosDesdeLista();
+    //cargarDatosDesdeLista(); //si se quieren datos de prueba antiguos abría que descomentar el siguiente método en la primera ejecución
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
