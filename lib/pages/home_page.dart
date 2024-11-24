@@ -14,8 +14,10 @@ import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -28,6 +30,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Lista de categorías
+  String _stepCount = '0';
   List<CategoryModel> categories = CategoryList().getAllCategories();
   int lengthCategories = CategoryList().getLenghtCategories();
   DateTime selectedDate = DateTime.now();
@@ -51,11 +54,20 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
+      @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+    updateTodaySteps();
+    cargarDatosDesdeLista(); //si se quieren datos de prueba antiguos abría que descomentar el siguiente método en la primera ejecución
+  }
+
   @override
   Widget build(BuildContext context) {
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
-    //cargarDatosDesdeLista(); //si se quieren datos de prueba antiguos abría que descomentar el siguiente método en la primera ejecución
+    
+    
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
@@ -175,7 +187,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  CaloriesDisplayWidget(futureCalories: getCaloriesForSelectedDate()),
+                  CaloriesDisplayWidget(futureCalories: getConsumedCaloriesForSelectedDate(), icon: const Icon( Icons.food_bank_sharp, color: Colors.blue, size: 40,), text: "Calorías consumidas: ",),
+                  CaloriesDisplayWidget(futureCalories: getBurnedCaloriesForSelectedDate(), icon: const Icon( Icons.local_fire_department, color: Colors.orange, size: 40,), text: "Calorías gastadas: ",),
                   StepCounterWidget(futureSteps: getStepsForSelectedDate()),
                   const Text(
                     'Categorías',
@@ -234,11 +247,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Método para obtener calorías del día seleccionado
-  Future<double> getCaloriesForSelectedDate() async {
+  Future<double> getConsumedCaloriesForSelectedDate() async {
     List<Food> foods = await dbFood.getFoodsByDate(getStringSelectedDate());
     double totalCalories = foods.fold(0, (sum, food) => sum + food.calories);
     return totalCalories;
   }
+
+// Método para obtener calorías del día seleccionado
+  Future<double> getBurnedCaloriesForSelectedDate() async {
+    return dbSteps.getCaloriesFromSteps(getStringSelectedDate());
+  }
+  
+
 
   Future<int> getStepsForSelectedDate() async {
     int steps = await dbSteps.getStepsByDate(getStringSelectedDate());
@@ -246,5 +266,53 @@ class _HomePageState extends State<HomePage> {
   }
   String getStringSelectedDate()  {
     return  DateFormat('dd/MM/yyyy').format(selectedDate);
+  }
+  
+  Future<void> updateTodaySteps() async {
+    String todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    if(await dbSteps.isTodayCreated(todayDate)){
+      dbSteps.updateFinalStepsByDate(todayDate, int.parse(_stepCount));
+      _logger.d("Se actualizaron los pasos finales $todayDate, a $_stepCount");
+    }else{
+      DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
+      String yesterdayDate = DateFormat('dd/MM/yyyy').format(yesterday);
+
+      int iSteps  =await dbSteps.getFinalStepsByDate(yesterdayDate);
+        
+      if (iSteps == 0){
+          iSteps=  int.parse(_stepCount);
+      }
+
+      dbSteps.addSteps(todayDate, iSteps, iSteps);
+      _logger.d("Se añadiio información para el día $todayDate, pasos iniciales $iSteps");
+    }
+
+  }
+  
+
+
+void initPlatformState() {
+    Pedometer.stepCountStream.listen(
+      (event) {
+        _logger.d("Número de pasos detectados: ${event.steps}");
+        updateTodaySteps();
+        setState(() => _stepCount = event.steps.toString());
+      },
+      onError: (error) {
+        _logger.e("Error en el sensor de pasos: $error");
+      },
+      onDone: () {
+        _logger.d("El stream del pedómetro se ha detenido");
+      },
+    );
+
+    Pedometer.pedestrianStatusStream.listen(
+      (status) {
+        _logger.d("Estado del sensor de pasos: $status");
+      },
+      onError: (error) {
+        _logger.e("Error en el estado del sensor: $error");
+      },
+    );
   }
 }

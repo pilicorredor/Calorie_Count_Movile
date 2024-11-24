@@ -66,4 +66,65 @@ class DBSteps {
     return 0; // Devuelve 0 si no hay registros
   }
 
+
+  Future<double> getCaloriesFromSteps(String date) async {
+    final db = await database;
+    const double caloriesPerStep = 0.04;
+    final result = await db.query(
+      'Steps',
+      where: 'date = ?',
+      whereArgs: [date],
+    );
+
+    if (result.isNotEmpty) {
+      int iCount = result.first['initialCount'] as int;
+      int fCount = result.first['finalCount'] as int;
+      return (fCount-iCount) * caloriesPerStep;
+    }
+
+    return 0; // Devuelve 0 si no hay registros
+}
+
+   Future<int> getFinalStepsByDate(String date) async {
+    final db = await database;
+    final result = await db.query(
+      'Steps',
+      where: 'date = ?',
+      whereArgs: [date],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first['finalCount'] as int;
+    }
+
+    return 0; // Devuelve 0 si no hay registros
+  }
+  Future<bool> isTodayCreated(String date) async {
+    final db = await database;
+    final result = await db.query(
+      'Steps',
+      where: 'date = ?',
+      whereArgs: [date],
+    );
+
+    return result.isNotEmpty; // Devuelve 0 si no hay registros
+  }
+
+  Future<void> updateFinalStepsByDate(String date, int finalCount) async {
+  final db = await database;
+
+  int updatedRows = await db.update(
+    'Steps',
+    {'finalCount': finalCount},
+    where: 'date = ?',
+    whereArgs: [date],
+  );
+
+  if (updatedRows > 0) {
+    _logger.d("Se actualizaron los pasos finales para la fecha $date.");
+  } else {
+    _logger.d("No se encontró un registro para la fecha $date.");
+  }
+}
+
 }

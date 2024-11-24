@@ -38,7 +38,7 @@ class StepCounterWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Pasos de hoy',
+                  'Pasos del día seleccionado: ',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[700],
