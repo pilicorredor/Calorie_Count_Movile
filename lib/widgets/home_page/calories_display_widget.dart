@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class CaloriesDisplayWidget extends StatelessWidget {
   final Future<double> futureCalories;
+  final Icon icon; 
+  final String text;
 
   // Constructor que recibe el Future como parámetro
-  const CaloriesDisplayWidget({super.key, required this.futureCalories});
+  const CaloriesDisplayWidget({super.key, required this.futureCalories, required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +33,10 @@ class CaloriesDisplayWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.local_fire_department,
-                  color: Colors.orange,
-                  size: 40,
-                ),
+                icon,
                 const SizedBox(height: 8),
                 Text(
-                  'Calorías consumidas hoy',
+                  text,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[700],

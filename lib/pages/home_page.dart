@@ -5,6 +5,7 @@ import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/providers/db_foods.dart';
+import 'package:calorie_counter/providers/db_steps.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
 import 'package:calorie_counter/widgets/custom_fab_add_food.dart';
@@ -13,7 +14,10 @@ import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:pedometer/pedometer.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -26,16 +30,44 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Lista de categorías
+  String _stepCount = '0';
   List<CategoryModel> categories = CategoryList().getAllCategories();
   int lengthCategories = CategoryList().getLenghtCategories();
   DateTime selectedDate = DateTime.now();
   final DBFood dbFood = DBFood();
+  final DBSteps dbSteps = DBSteps();
+  final Logger _logger = Logger();
+  List<Map<String, dynamic>> stepData = [
+    {'date': '01/11/2024', 'i_count': 0, 'f_count': 1200},
+    {'date': '02/11/2024', 'i_count': 0,'f_count': 1300},
+    {'date': '03/11/2024', 'i_count': 0,'f_count': 1250},
+    {'date': '04/11/2024', 'i_count': 0,'f_count': 1600},
+    // Agrega más datos según necesites
+    ];
+        Future<void> cargarDatosDesdeLista() async {
+      for (var data in stepData) {
+        String date = data['date'];
+        int iCount = data['i_count'];
+        int fCount = data['f_count'];
+        _logger.d("Se cargo unos pasos para la fecha $date");
+        await dbSteps.addSteps(date, iCount,fCount);
+      }
+    }
+
+      @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+    updateTodaySteps();
+    cargarDatosDesdeLista(); //si se quieren datos de prueba antiguos abría que descomentar el siguiente método en la primera ejecución
+  }
 
   @override
   Widget build(BuildContext context) {
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
-
+    
+    
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
@@ -155,8 +187,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  CaloriesDisplayWidget(futureCalories: getCaloriesForSelectedDate()),
-                  const StepCounterWidget(),
+                  CaloriesDisplayWidget(futureCalories: getConsumedCaloriesForSelectedDate(), icon: const Icon( Icons.food_bank_sharp, color: Colors.blue, size: 40,), text: "Calorías consumidas: ",),
+                  CaloriesDisplayWidget(futureCalories: getBurnedCaloriesForSelectedDate(), icon: const Icon( Icons.local_fire_department, color: Colors.orange, size: 40,), text: "Calorías gastadas: ",),
+                  StepCounterWidget(futureSteps: getStepsForSelectedDate()),
                   const Text(
                     'Categorías',
                     style: TextStyle(
@@ -214,10 +247,72 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Método para obtener calorías del día seleccionado
-  Future<double> getCaloriesForSelectedDate() async {
-    String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
-    List<Food> foods = await dbFood.getFoodsByDate(formattedDate);
+  Future<double> getConsumedCaloriesForSelectedDate() async {
+    List<Food> foods = await dbFood.getFoodsByDate(getStringSelectedDate());
     double totalCalories = foods.fold(0, (sum, food) => sum + food.calories);
     return totalCalories;
+  }
+
+// Método para obtener calorías del día seleccionado
+  Future<double> getBurnedCaloriesForSelectedDate() async {
+    return dbSteps.getCaloriesFromSteps(getStringSelectedDate());
+  }
+  
+
+
+  Future<int> getStepsForSelectedDate() async {
+    int steps = await dbSteps.getStepsByDate(getStringSelectedDate());
+    return steps;
+  }
+  String getStringSelectedDate()  {
+    return  DateFormat('dd/MM/yyyy').format(selectedDate);
+  }
+  
+  Future<void> updateTodaySteps() async {
+    String todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    if(await dbSteps.isTodayCreated(todayDate)){
+      dbSteps.updateFinalStepsByDate(todayDate, int.parse(_stepCount));
+      _logger.d("Se actualizaron los pasos finales $todayDate, a $_stepCount");
+    }else{
+      DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
+      String yesterdayDate = DateFormat('dd/MM/yyyy').format(yesterday);
+
+      int iSteps  =await dbSteps.getFinalStepsByDate(yesterdayDate);
+        
+      if (iSteps == 0){
+          iSteps=  int.parse(_stepCount);
+      }
+
+      dbSteps.addSteps(todayDate, iSteps, iSteps);
+      _logger.d("Se añadiio información para el día $todayDate, pasos iniciales $iSteps");
+    }
+
+  }
+  
+
+
+void initPlatformState() {
+    Pedometer.stepCountStream.listen(
+      (event) {
+        _logger.d("Número de pasos detectados: ${event.steps}");
+        updateTodaySteps();
+        setState(() => _stepCount = event.steps.toString());
+      },
+      onError: (error) {
+        _logger.e("Error en el sensor de pasos: $error");
+      },
+      onDone: () {
+        _logger.d("El stream del pedómetro se ha detenido");
+      },
+    );
+
+    Pedometer.pedestrianStatusStream.listen(
+      (status) {
+        _logger.d("Estado del sensor de pasos: $status");
+      },
+      onError: (error) {
+        _logger.e("Error en el estado del sensor: $error");
+      },
+    );
   }
 }

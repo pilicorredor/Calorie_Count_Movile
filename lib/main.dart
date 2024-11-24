@@ -70,5 +70,3 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
     );
   }
 }
-
-

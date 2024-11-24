@@ -63,6 +63,14 @@ class _PermissionsView extends ConsumerWidget {
             ref.read(permissionsProvider.notifier).requestSensorsAccess();
           },
         ),
+        CheckboxListTile(
+          value: permissions.CameraGranted,
+          title: const Text('Actividad'),
+          subtitle: Text('${permissions.activityRecognition}'),
+          onChanged: (_) {
+            ref.read(permissionsProvider.notifier).requestActivityRecognnitionAccess();
+          },
+        ),
       ],
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -18,6 +19,7 @@ class PermissionsNotifier extends StateNotifier<PermissionsState> {
       Permission.location.status,
       Permission.locationAlways.status,
       Permission.locationWhenInUse.status,
+       Permission.activityRecognition.status,
     ]);
     state = state.copyWith(
       camera: permissionsArray[0],
@@ -26,6 +28,7 @@ class PermissionsNotifier extends StateNotifier<PermissionsState> {
       location: permissionsArray[3],
       locationAlways: permissionsArray[4],
       locationWhenInUse: permissionsArray[5],
+      activityRecognition: permissionsArray[6]
     );
   }
 
@@ -72,6 +75,12 @@ class PermissionsNotifier extends StateNotifier<PermissionsState> {
 
     _checkPermissionState(status);
   }
+
+  requestActivityRecognnitionAccess() async{
+    final status = await Permission.activityRecognition.request();
+    state = state.copyWith(activityRecognition:  status);
+    _checkPermissionState(status);
+  }
 }
 
 class PermissionsState {
@@ -82,6 +91,7 @@ class PermissionsState {
   final PermissionStatus location;
   final PermissionStatus locationAlways;
   final PermissionStatus locationWhenInUse;
+  final PermissionStatus activityRecognition;
 
   PermissionsState({
     this.camera = PermissionStatus.denied,
@@ -90,6 +100,7 @@ class PermissionsState {
     this.location = PermissionStatus.denied,
     this.locationAlways = PermissionStatus.denied,
     this.locationWhenInUse = PermissionStatus.denied,
+    this.activityRecognition = PermissionStatus.denied,
   });
 
   get CameraGranted {
@@ -112,6 +123,10 @@ class PermissionsState {
     return locationAlways == PermissionStatus.granted;
   }
 
+  get ActivityRecognitionGranted {
+    return activityRecognition == PermissionStatus.granted;
+  }
+
   // ignore: non_constant_identifier_names
   get LocationWhenInUseGranted {
     return locationWhenInUse == PermissionStatus.granted;
@@ -124,6 +139,7 @@ class PermissionsState {
     PermissionStatus? location,
     PermissionStatus? locationAlways,
     PermissionStatus? locationWhenInUse,
+    PermissionStatus? activityRecognition,
   }) =>
       PermissionsState(
         camera: camera ?? this.camera,
@@ -132,5 +148,6 @@ class PermissionsState {
         location: location ?? this.location,
         locationAlways: locationAlways ?? this.locationAlways,
         locationWhenInUse: locationWhenInUse ?? this.locationWhenInUse,
+        activityRecognition : activityRecognition ?? this.activityRecognition,
       );
 }
