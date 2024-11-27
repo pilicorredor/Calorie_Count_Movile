@@ -1,5 +1,5 @@
-import 'dart:math';
-
+import 'package:calorie_counter/models/user.dart';
+import 'package:calorie_counter/providers/db_authentication.dart';
 import 'package:calorie_counter/widgets/signup_page/password_field_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +15,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
-  final username = TextEditingController();
+  final name = TextEditingController();
+  final email = TextEditingController();
+  final age = TextEditingController();
+  final weight = TextEditingController();
+  final height = TextEditingController();
+  ValueNotifier<String?> gender = ValueNotifier<String?>(null);
+  final goal = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
 
@@ -26,8 +32,6 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _obscureTextConfirmPassword = true;
 
   final formKey = GlobalKey<FormState>();
-
-  bool _obscureText = true;
 
   // Método para abrir el selector de fecha
   Future<void> _selectDate(BuildContext context) async {
@@ -75,6 +79,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                   // Campo de Nombre
                   TextFormField(
+                    controller: name,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "se debe completar este campo";
@@ -87,6 +92,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                   // Campo de Correo
                   TextFormField(
+                    controller: email,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "se debe completar este campo";
@@ -121,6 +127,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                   // Campo de Altura
                   TextFormField(
+                    controller: height,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "se debe completar este campo";
@@ -134,6 +141,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                   // Campo de Peso
                   TextFormField(
+                    controller: weight,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "se debe completar este campo";
@@ -145,15 +153,19 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Campo de Género
-                  DropdownButtonFormField<String>(
+              // Campo de Género
+              ValueListenableBuilder<String?>(
+                valueListenable: gender, // Escuchamos los cambios en gender
+                builder: (context, value, child) {
+                  return DropdownButtonFormField<String>(
                     validator: (value) {
-                      if (value!.isEmpty) {
-                        return "se debe completar este campo";
+                      if (value == null || value.isEmpty) {
+                        return "Se debe completar este campo";
                       }
                       return null;
                     },
                     decoration: const InputDecoration(labelText: "Género"),
+                    value: value, // Valor seleccionado
                     items: const [
                       DropdownMenuItem(
                           value: "Masculino", child: Text("Masculino")),
@@ -161,12 +173,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           value: "Femenino", child: Text("Femenino")),
                       DropdownMenuItem(value: "Otro", child: Text("Otro")),
                     ],
-                    onChanged: (value) {},
-                  ),
-                  const SizedBox(height: 20),
+                    onChanged: (selectedValue) {
+                      gender.value = selectedValue; // Actualizamos el valor
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
 
                   // Campo de Objetivo
                   TextFormField(
+                    controller: goal,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "se debe completar este campo";
@@ -196,11 +213,10 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       if (value.length < 8) {
                         return "La contraseña debe tener al menos 8 caracteres";
-                      }else{
-                      print("null");
-                      return null;
+                      } else {
+                        print("null");
+                        return null;
                       }
-
                     },
                   ),
                   const SizedBox(height: 20),
@@ -222,10 +238,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       if (value != _passwordController.text) {
                         return "Las contraseñas no coinciden";
-                      }else{
-                      return null;
+                      } else {
+                        return null;
                       }
-
                     },
                   ),
 
@@ -237,7 +252,22 @@ class _SignUpPageState extends State<SignUpPage> {
                       print(password);
                       print(confirmPassword);
                       if (formKey.currentState!.validate()) {
+                        final db = DbAuthentication();
+                        db
+                            .signup(User(
+                                name: name.text,
+                                email: email.text,
+                                //pendiente metodo edad
+                                age: 0,
+                                weight: double.parse(weight.text),
+                                height: double.parse(height.text),
+                                gender: gender.value,
+                                goal: goal.text,
+                                password: _passwordController.text))
+                            .whenComplete(() {
+                          // ignore: use_build_context_synchronously
                           Navigator.pushReplacementNamed(context, 'login');
+                        });
                       }
                     },
                     child: const Text("Registrar"),

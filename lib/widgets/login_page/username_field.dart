@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 // Widget para el campo de usuario
 class UsernameField extends StatelessWidget {
-  const UsernameField({super.key});
+  final TextEditingController controller;
+
+  const UsernameField({super.key, required this.controller});
+  
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       validator: (value) {
         if (value!.isEmpty) {
           return "se debe completar este campo";

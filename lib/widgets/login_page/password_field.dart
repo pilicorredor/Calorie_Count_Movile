@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 class PasswordField extends StatelessWidget {
   final bool obscureText;
   final VoidCallback onIconPressed;
+  final TextEditingController controller;
 
   const PasswordField({
     super.key, 
     required this.obscureText,
     required this.onIconPressed,
+    required this.controller
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       obscureText: obscureText,
       validator: (value) {
         if (value!.isEmpty) {

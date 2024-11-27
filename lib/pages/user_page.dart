@@ -26,6 +26,7 @@ class UserPage extends StatelessWidget {
               child: Column(
                 children: [
                   const UserInfo(
+                    userId: 0,
                     name: "Andrea",
                     email: 'lucia123@example.com',
                     age: 23,
