@@ -26,12 +26,14 @@ class UserPage extends StatelessWidget {
               child: Column(
                 children: [
                   const UserInfo(
+                    name: "Andrea",
                     email: 'lucia123@example.com',
                     age: 23,
                     weight: 65,
                     height: 1.65,
                     gender: 'Femenino',
                     goal: 'Bajar peso',
+                    password: "",
                   ), // Sección de información
                   const SizedBox(height: 20),
                   ElevatedButton.icon(

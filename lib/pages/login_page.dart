@@ -13,7 +13,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final username = TextEditingController();
+  final password = TextEditingController();
+
   bool _obscureText = true;
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -23,28 +28,43 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const WelcomeMessage(), // Mensaje de bienvenida
-                const SizedBox(height: 30),
-                const UsernameField(), // Campo de usuario
-                const SizedBox(height: 20),
-                PasswordField(obscureText: _obscureText, onIconPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText; // Alternar visibilidad
-                  });
-                }),
-                const SizedBox(height: 30),
-                LoginButton(onPressed: () {
-                  // Lógica de login
-                  Navigator.pushReplacementNamed(context, 'home');
-                }),
-                const SizedBox(height: 20),
-                RegisterButton(onPressed: () {
-                  Navigator.pushReplacementNamed(context, 'SingUp');
-                }),
-              ],
+            child: Form(
+                key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const WelcomeMessage(), // Mensaje de bienvenida
+                  const SizedBox(height: 30),
+                  const UsernameField(), // Campo de usuario
+                  const SizedBox(height: 20),
+                  PasswordField(
+                      obscureText: _obscureText,
+                      onIconPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText; // Alternar visibilidad
+                        });
+                      }),
+                  const SizedBox(height: 30),
+                  LoginButton(onPressed: () {
+                    // Lógica de login
+                    if(formKey.currentState!.validate()){
+                        Navigator.pushReplacementNamed(context, 'home');
+                    }
+                  }),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("¿No tienes una cuenta?"),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, 'signUp');
+                          },
+                          child: const Text("Registrate"))
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -52,4 +72,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
