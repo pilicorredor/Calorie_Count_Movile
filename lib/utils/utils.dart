@@ -1,5 +1,7 @@
 import 'package:calorie_counter/utils/icon_list.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 extension ColorExtension on String {
   toColor() {
@@ -18,3 +20,4 @@ extension IconExtension on String {
     return IconList().iconMap[this];
   }
 }
+
