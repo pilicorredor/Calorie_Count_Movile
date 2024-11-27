@@ -1,6 +1,7 @@
 import 'package:calorie_counter/widgets/user_page/user_info.dart';
 import 'package:calorie_counter/widgets/user_page/user_profile_header.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -11,8 +12,9 @@ class UserPage extends StatelessWidget {
       body: Column(
         children: [
           const UserProfileHeader(
-            username: 'Lucia',
-            profileImageUrl: 'https://static.semrush.com/persona/personas/4436574'), // Sección del encabezado
+              username: 'Lucia',
+              profileImageUrl:
+                  'https://static.semrush.com/persona/personas/4436574'), // Sección del encabezado
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(20.0),
@@ -26,7 +28,7 @@ class UserPage extends StatelessWidget {
               child: Column(
                 children: [
                   const UserInfo(
-                    userId: 0,
+                    userId: 1,
                     name: "Andrea",
                     email: 'lucia123@example.com',
                     age: 23,
@@ -47,6 +49,19 @@ class UserPage extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.edit),
                     label: const Text('Editar Perfil'),
+                  ),
+
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, 'login');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(156, 40, 177, 1.0),
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.output_outlined),
+                    label: const Text('Cerrar Sesión'),
                   ),
                 ],
               ),

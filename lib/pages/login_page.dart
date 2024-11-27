@@ -5,6 +5,8 @@ import 'package:calorie_counter/widgets/login_page/password_field.dart';
 import 'package:calorie_counter/widgets/login_page/username_field.dart';
 import 'package:calorie_counter/widgets/login_page/welcome_message.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,6 +30,14 @@ class _LoginPageState extends State<LoginPage> {
         await db.login(User(email: username.text, password: password.text));
     if (response == true) {
       if (!mounted) return;
+      Fluttertoast.showToast(
+        msg: "Login exitoso!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
       Navigator.pushReplacementNamed(context, 'home');
     } else {
       setState(() {

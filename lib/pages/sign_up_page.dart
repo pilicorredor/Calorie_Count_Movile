@@ -3,6 +3,7 @@ import 'package:calorie_counter/providers/db_authentication.dart';
 import 'package:calorie_counter/widgets/signup_page/password_field_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -153,33 +154,33 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: 20),
 
-              // Campo de Género
-              ValueListenableBuilder<String?>(
-                valueListenable: gender, // Escuchamos los cambios en gender
-                builder: (context, value, child) {
-                  return DropdownButtonFormField<String>(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Se debe completar este campo";
-                      }
-                      return null;
+                  // Campo de Género
+                  ValueListenableBuilder<String?>(
+                    valueListenable: gender, // Escuchamos los cambios en gender
+                    builder: (context, value, child) {
+                      return DropdownButtonFormField<String>(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Se debe completar este campo";
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(labelText: "Género"),
+                        value: value, // Valor seleccionado
+                        items: const [
+                          DropdownMenuItem(
+                              value: "Masculino", child: Text("Masculino")),
+                          DropdownMenuItem(
+                              value: "Femenino", child: Text("Femenino")),
+                          DropdownMenuItem(value: "Otro", child: Text("Otro")),
+                        ],
+                        onChanged: (selectedValue) {
+                          gender.value = selectedValue; // Actualizamos el valor
+                        },
+                      );
                     },
-                    decoration: const InputDecoration(labelText: "Género"),
-                    value: value, // Valor seleccionado
-                    items: const [
-                      DropdownMenuItem(
-                          value: "Masculino", child: Text("Masculino")),
-                      DropdownMenuItem(
-                          value: "Femenino", child: Text("Femenino")),
-                      DropdownMenuItem(value: "Otro", child: Text("Otro")),
-                    ],
-                    onChanged: (selectedValue) {
-                      gender.value = selectedValue; // Actualizamos el valor
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
+                  ),
+                  const SizedBox(height: 20),
 
                   // Campo de Objetivo
                   TextFormField(
@@ -266,6 +267,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                 password: _passwordController.text))
                             .whenComplete(() {
                           // ignore: use_build_context_synchronously
+                          Fluttertoast.showToast(
+                            msg: "Registro exitoso!",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
                           Navigator.pushReplacementNamed(context, 'login');
                         });
                       }
