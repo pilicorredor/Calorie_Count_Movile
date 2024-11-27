@@ -2,6 +2,7 @@ import 'package:calorie_counter/widgets/user_page/user_info_row.dart';
 import 'package:flutter/material.dart';
 
 class UserInfo extends StatelessWidget {
+  final int userId;
   final String name;
   final String email;
   final int age;
@@ -13,6 +14,7 @@ class UserInfo extends StatelessWidget {
 
   const UserInfo({
     super.key,
+    required this.userId,
     required this.name,
     required this.email,
     required this.age,

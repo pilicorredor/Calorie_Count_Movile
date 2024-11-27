@@ -1,6 +1,7 @@
+import 'package:calorie_counter/models/user.dart';
+import 'package:calorie_counter/providers/db_authentication.dart';
 import 'package:calorie_counter/widgets/login_page/login_button.dart';
 import 'package:calorie_counter/widgets/login_page/password_field.dart';
-import 'package:calorie_counter/widgets/login_page/register_button.dart';
 import 'package:calorie_counter/widgets/login_page/username_field.dart';
 import 'package:calorie_counter/widgets/login_page/welcome_message.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,23 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _obscureText = true;
 
+  bool isLoginTrue = false;
+
+  final db = DbAuthentication();
+
+  login() async {
+    var response =
+        await db.login(User(email: username.text, password: password.text));
+    if (response == true) {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, 'home');
+    } else {
+      setState(() {
+        isLoginTrue = true;
+      });
+    }
+  }
+
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -29,15 +47,16 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: SingleChildScrollView(
             child: Form(
-                key: formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const WelcomeMessage(), // Mensaje de bienvenida
                   const SizedBox(height: 30),
-                  const UsernameField(), // Campo de usuario
+                  UsernameField(controller: username), // Campo de usuario
                   const SizedBox(height: 20),
                   PasswordField(
+                      controller: password,
                       obscureText: _obscureText,
                       onIconPressed: () {
                         setState(() {
@@ -47,8 +66,8 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 30),
                   LoginButton(onPressed: () {
                     // Lógica de login
-                    if(formKey.currentState!.validate()){
-                        Navigator.pushReplacementNamed(context, 'home');
+                    if (formKey.currentState!.validate()) {
+                      login();
                     }
                   }),
 
@@ -63,6 +82,13 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text("Registrate"))
                     ],
                   ),
+
+                  isLoginTrue
+                      ? const Text(
+                          "correo electronico o contraseña incorrectos",
+                          style: TextStyle(color: Colors.red),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
