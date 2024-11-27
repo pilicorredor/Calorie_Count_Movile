@@ -6,7 +6,13 @@ class UsernameField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "se debe completar este campo";
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: 'Correo o Nombre de Usuario',
         labelStyle: const TextStyle(color: Colors.black),
