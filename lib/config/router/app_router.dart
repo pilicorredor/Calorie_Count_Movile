@@ -1,4 +1,5 @@
 import 'package:calorie_counter/pages/sign_up_page.dart';
+import 'package:calorie_counter/pages/user_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:calorie_counter/presentation/screens/screens.dart';
 
@@ -15,5 +16,10 @@ final router = GoRouter(routes: [
     GoRoute(
     path: '/SingUp',
     builder: (context, state) => const SignUpPage(),
+  ),
+
+      GoRoute(
+    path: 'profile',
+    builder: (context, state) => const UserPage(),
   ),
 ]);

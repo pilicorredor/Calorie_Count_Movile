@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
         await db.login(User(email: username.text, password: password.text));
     if (response == true) {
       if (!mounted) return;
+       print('Detalles del usuario: $userDetails');
       Fluttertoast.showToast(
         msg: "Login exitoso!",
         toastLength: Toast.LENGTH_SHORT,

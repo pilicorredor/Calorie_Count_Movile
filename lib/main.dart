@@ -69,7 +69,8 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           'home': (_) => const HomePage(),
           'signUp': (_) => const SignUpPage(),
           '/permissions': (_) => const PermissionsScreen(),
-
+          'profile': (_) => const UserPage(),
+          
         },
       ),
     );

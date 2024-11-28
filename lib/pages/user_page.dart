@@ -23,6 +23,7 @@ class _UserPageState extends State<UserPage> {
   void initState() {
     super.initState();
     currentUser = widget.user;
+    print('Usuario inicializado en UserPage: $currentUser');
   }
 
   @override
@@ -33,13 +34,8 @@ class _UserPageState extends State<UserPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-/*            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(arguments: currentUser),
-              ),
-            );*/
-            //Navigator.pushReplacementNamed(context, 'home');
+            print('Detalles del usuario regreso home: $currentUser');
+            Navigator.pop(context, currentUser); // Vuelve a la pantalla anterior
           },
         ),
       ),
@@ -87,10 +83,13 @@ class _UserPageState extends State<UserPage> {
 
                       if (updatedUser != null) {
                         // Si se ha editado el perfil, muestra el mensaje y actualiza el usuario
+
                         Fluttertoast.showToast(msg: "Perfil actualizado");
                         setState(() {
                           currentUser =
                               updatedUser; // Actualiza el estado con el nuevo usuario
+                          print(
+                              'Detalles del usuario Perfil actualizado: $currentUser');
                         });
                       } else {
                         currentUser = currentUser;
@@ -106,6 +105,9 @@ class _UserPageState extends State<UserPage> {
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
+                      currentUser = null;
+                      print('Detalles del usuario signout: $currentUser');
+
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

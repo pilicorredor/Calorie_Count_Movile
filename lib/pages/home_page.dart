@@ -22,9 +22,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  
-  
   const HomePage({super.key});
+  
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -39,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   final DBFood dbFood = DBFood();
   final DBSteps dbSteps = DBSteps();
   final Logger _logger = Logger();
+  
   List<Map<String, dynamic>> stepData = [
     {'date': '01/11/2024', 'i_count': 0, 'f_count': 1200},
     {'date': '02/11/2024', 'i_count': 0, 'f_count': 1300},
@@ -66,18 +66,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = ModalRoute.of(context)?.settings.arguments as User?;
+    print('Usuario recibido en Home: $user');
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
 
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
-      body: _getBody(currentIndex), // Cambia el cuerpo según el índice
+      body: _getBody(currentIndex, user), // Cambia el cuerpo según el índice
     );
   }
 
   // Método para obtener el cuerpo dinámico basado en el índice de la navegación
-  Widget _getBody(int currentIndex) {
+  Widget _getBody(int currentIndex, User? user) {
     switch (currentIndex) {
       case 0:
         final User? user = ModalRoute.of(context)?.settings.arguments as User?;
@@ -122,6 +124,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Text(
+                        //"Lucia",
                         user?.name ?? 'Usuario',
                         style: const TextStyle(
                           fontSize: 20,
@@ -247,25 +250,21 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return const ChartsPage(); // Cambiar por tu página de favoritos
 case 3:
-  // Asegúrate de que `user` está disponible antes de la navegación
-  final User? user = ModalRoute.of(context)?.settings.arguments as User?;
-
-  // Verificar si el `user` es null antes de navegar
-  if (user == null) {
-    return const Center(child: Text('Usuario no encontrado')); // Maneja el caso cuando no haya usuario
-  }
-
   // Si `user` está disponible, realiza la navegación
-  Future.microtask(() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserPage(user: user), // Pasa el `user` a UserPage
-      ),
-    );
-  });
+  print('Detalles del usuario perfil: $user');
+  
+if (user != null) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => UserPage(user: user),
+    ),
+  );
+}
 
-  return const SizedBox();  // Cambiar por tu página de usuario
+  // Retorna un widget vacío mientras se navega
+  return const SizedBox();
+// Cambiar por tu página de usuario
       default:
         return const Center(child: Text('Página no encontrada'));
     }
