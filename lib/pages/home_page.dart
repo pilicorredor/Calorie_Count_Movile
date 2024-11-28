@@ -1,5 +1,6 @@
 import 'package:calorie_counter/models/Food.dart';
 import 'package:calorie_counter/models/category_model.dart';
+import 'package:calorie_counter/models/user.dart';
 import 'package:calorie_counter/pages/category_detail_page.dart'; // Asegúrate de importar la nueva pantalla
 import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
@@ -14,7 +15,6 @@ import 'package:calorie_counter/widgets/home_page/custom_navigation_bar.dart';
 import 'package:calorie_counter/widgets/home_page/food_card.dart';
 import 'package:calorie_counter/widgets/step_counter/StepCounterWidget.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:pedometer/pedometer.dart';
@@ -22,6 +22,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
+  
   const HomePage({super.key});
 
   @override
@@ -39,22 +40,22 @@ class _HomePageState extends State<HomePage> {
   final Logger _logger = Logger();
   List<Map<String, dynamic>> stepData = [
     {'date': '01/11/2024', 'i_count': 0, 'f_count': 1200},
-    {'date': '02/11/2024', 'i_count': 0,'f_count': 1300},
-    {'date': '03/11/2024', 'i_count': 0,'f_count': 1250},
-    {'date': '04/11/2024', 'i_count': 0,'f_count': 1600},
+    {'date': '02/11/2024', 'i_count': 0, 'f_count': 1300},
+    {'date': '03/11/2024', 'i_count': 0, 'f_count': 1250},
+    {'date': '04/11/2024', 'i_count': 0, 'f_count': 1600},
     // Agrega más datos según necesites
-    ];
-        Future<void> cargarDatosDesdeLista() async {
-      for (var data in stepData) {
-        String date = data['date'];
-        int iCount = data['i_count'];
-        int fCount = data['f_count'];
-        _logger.d("Se cargo unos pasos para la fecha $date");
-        await dbSteps.addSteps(date, iCount,fCount);
-      }
+  ];
+  Future<void> cargarDatosDesdeLista() async {
+    for (var data in stepData) {
+      String date = data['date'];
+      int iCount = data['i_count'];
+      int fCount = data['f_count'];
+      _logger.d("Se cargo unos pasos para la fecha $date");
+      await dbSteps.addSteps(date, iCount, fCount);
     }
+  }
 
-      @override
+  @override
   void initState() {
     super.initState();
     initPlatformState();
@@ -66,8 +67,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
-    
-    
+
+    final User? user = ModalRoute.of(context)?.settings.arguments as User?;
+
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
@@ -90,7 +92,7 @@ class _HomePageState extends State<HomePage> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
-                  //Navigator.pushNamed(context, 'permissions'); 
+                  //Navigator.pushNamed(context, 'permissions');
                   Navigator.pushReplacementNamed(context, '/permissions');
                   //context.push('/permissions');
                 },
@@ -187,8 +189,24 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  CaloriesDisplayWidget(futureCalories: getConsumedCaloriesForSelectedDate(), icon: const Icon( Icons.food_bank_sharp, color: Colors.blue, size: 40,), text: "Calorías consumidas: ",),
-                  CaloriesDisplayWidget(futureCalories: getBurnedCaloriesForSelectedDate(), icon: const Icon( Icons.local_fire_department, color: Colors.orange, size: 40,), text: "Calorías gastadas: ",),
+                  CaloriesDisplayWidget(
+                    futureCalories: getConsumedCaloriesForSelectedDate(),
+                    icon: const Icon(
+                      Icons.food_bank_sharp,
+                      color: Colors.blue,
+                      size: 40,
+                    ),
+                    text: "Calorías consumidas: ",
+                  ),
+                  CaloriesDisplayWidget(
+                    futureCalories: getBurnedCaloriesForSelectedDate(),
+                    icon: const Icon(
+                      Icons.local_fire_department,
+                      color: Colors.orange,
+                      size: 40,
+                    ),
+                    text: "Calorías gastadas: ",
+                  ),
                   StepCounterWidget(futureSteps: getStepsForSelectedDate()),
                   const Text(
                     'Categorías',
@@ -228,8 +246,26 @@ class _HomePageState extends State<HomePage> {
         return const FavoritesPage(); // Cambiar por tu página de gráficos
       case 2:
         return const ChartsPage(); // Cambiar por tu página de favoritos
-      case 3:
-        return const UserPage(); // Cambiar por tu página de usuario
+case 3:
+  // Asegúrate de que `user` está disponible antes de la navegación
+  final User? user = ModalRoute.of(context)?.settings.arguments as User?;
+
+  // Verificar si el `user` es null antes de navegar
+  if (user == null) {
+    return const Center(child: Text('Usuario no encontrado')); // Maneja el caso cuando no haya usuario
+  }
+
+  // Si `user` está disponible, realiza la navegación
+  Future.microtask(() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserPage(user: user), // Pasa el `user` a UserPage
+      ),
+    );
+  });
+
+  return const SizedBox();  // Cambiar por tu página de usuario
       default:
         return const Center(child: Text('Página no encontrada'));
     }
@@ -257,41 +293,38 @@ class _HomePageState extends State<HomePage> {
   Future<double> getBurnedCaloriesForSelectedDate() async {
     return dbSteps.getCaloriesFromSteps(getStringSelectedDate());
   }
-  
-
 
   Future<int> getStepsForSelectedDate() async {
     int steps = await dbSteps.getStepsByDate(getStringSelectedDate());
     return steps;
   }
-  String getStringSelectedDate()  {
-    return  DateFormat('dd/MM/yyyy').format(selectedDate);
+
+  String getStringSelectedDate() {
+    return DateFormat('dd/MM/yyyy').format(selectedDate);
   }
-  
+
   Future<void> updateTodaySteps() async {
     String todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    if(await dbSteps.isTodayCreated(todayDate)){
+    if (await dbSteps.isTodayCreated(todayDate)) {
       dbSteps.updateFinalStepsByDate(todayDate, int.parse(_stepCount));
       _logger.d("Se actualizaron los pasos finales $todayDate, a $_stepCount");
-    }else{
+    } else {
       DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
       String yesterdayDate = DateFormat('dd/MM/yyyy').format(yesterday);
 
-      int iSteps  =await dbSteps.getFinalStepsByDate(yesterdayDate);
-        
-      if (iSteps == 0){
-          iSteps=  int.parse(_stepCount);
+      int iSteps = await dbSteps.getFinalStepsByDate(yesterdayDate);
+
+      if (iSteps == 0) {
+        iSteps = int.parse(_stepCount);
       }
 
       dbSteps.addSteps(todayDate, iSteps, iSteps);
-      _logger.d("Se añadiio información para el día $todayDate, pasos iniciales $iSteps");
+      _logger.d(
+          "Se añadiio información para el día $todayDate, pasos iniciales $iSteps");
     }
-
   }
-  
 
-
-void initPlatformState() {
+  void initPlatformState() {
     Pedometer.stepCountStream.listen(
       (event) {
         _logger.d("Número de pasos detectados: ${event.steps}");

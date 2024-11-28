@@ -35,6 +35,7 @@ class DbAuthentication {
     });
   }
 
+//Login
   Future<bool> login(User user) async {
     final Database db = await initDB();
 
@@ -47,9 +48,18 @@ class DbAuthentication {
     }
   }
 
+//Sign Up
   Future<int> signup(User user) async {
     final Database db = await initDB();
 
     return db.insert('users', user.toJson());
+  }
+
+//Current User Datails
+  Future<User?> getUser(String email) async {
+    final Database db = await initDB();
+    var responseUser =
+        await db.query("users", where: "email = ?", whereArgs: [email]);
+    return responseUser.isNotEmpty? User.fromJson(responseUser.first):null;
   }
 }

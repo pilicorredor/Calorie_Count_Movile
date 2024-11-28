@@ -1,3 +1,4 @@
+import 'package:calorie_counter/models/user.dart';
 import 'package:calorie_counter/pages/home_page.dart';
 import 'package:calorie_counter/pages/login_page.dart';
 import 'package:calorie_counter/pages/sign_up_page.dart';
@@ -15,6 +16,8 @@ import 'package:provider/provider.dart' as provider; // Alias para provider
 void main() => runApp(const ProviderScope(child: MyApp()));
 
 class MyApp extends ConsumerStatefulWidget  {
+
+  
   const MyApp({super.key});
 
   @override
@@ -62,7 +65,7 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
         initialRoute: 'login',
         routes: {
           'login': (_) => const LoginPage(),
-          'home': (_) => const HomePage(),
+          'home': (_) => HomePage(),
           'signUp': (_) => const SignUpPage(),
           '/permissions': (_) => const PermissionsScreen(),
         },

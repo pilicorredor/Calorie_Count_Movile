@@ -1,4 +1,7 @@
+import 'package:calorie_counter/main.dart';
 import 'package:calorie_counter/models/user.dart';
+import 'package:calorie_counter/pages/home_page.dart';
+import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/providers/db_authentication.dart';
 import 'package:calorie_counter/widgets/login_page/login_button.dart';
 import 'package:calorie_counter/widgets/login_page/password_field.dart';
@@ -6,7 +9,6 @@ import 'package:calorie_counter/widgets/login_page/username_field.dart';
 import 'package:calorie_counter/widgets/login_page/welcome_message.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   final db = DbAuthentication();
 
   login() async {
+    User? userDetails = await db.getUser(username.text);
     var response =
         await db.login(User(email: username.text, password: password.text));
     if (response == true) {
@@ -38,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-      Navigator.pushReplacementNamed(context, 'home');
+      Navigator.pushReplacementNamed(context, 'home', arguments: userDetails);
     } else {
       setState(() {
         isLoginTrue = true;
