@@ -23,6 +23,7 @@ import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   
+  
   const HomePage({super.key});
 
   @override
@@ -68,8 +69,6 @@ class _HomePageState extends State<HomePage> {
     final uiProvider = Provider.of<UIProvider>(context);
     final currentIndex = uiProvider.bnbIndex; // Obtiene el índice actual
 
-    final User? user = ModalRoute.of(context)?.settings.arguments as User?;
-
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
@@ -81,6 +80,7 @@ class _HomePageState extends State<HomePage> {
   Widget _getBody(int currentIndex) {
     switch (currentIndex) {
       case 0:
+        final User? user = ModalRoute.of(context)?.settings.arguments as User?;
         return Scaffold(
           appBar: AppBar(
             title: const Text('Aplicación de Nutrición'),
@@ -105,25 +105,25 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         backgroundImage: NetworkImage(
                           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s',
                         ),
                         radius: 24,
                       ),
-                      SizedBox(width: 12),
-                      Text(
-                        'Hola\n',
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Hola ',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
                       Text(
-                        '\n Lucia',
-                        style: TextStyle(
+                        user?.name ?? 'Usuario',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),

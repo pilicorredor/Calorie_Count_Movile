@@ -259,7 +259,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 name: name.text,
                                 email: email.text,
                                 //pendiente metodo edad
-                                age: 0,
+                                age: calculateAge(_dateController as DateTime),
                                 weight: double.parse(weight.text),
                                 height: double.parse(height.text),
                                 gender: gender.value,
@@ -276,6 +276,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             fontSize: 16.0,
                           );
                           Navigator.pushReplacementNamed(context, 'login');
+                          print(age);
                         });
                       }
                     },
@@ -300,5 +301,15 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
+  }
+
+  int calculateAge(DateTime birthDate) {
+    DateTime today = DateTime.now();
+    int age = today.year - birthDate.year;
+    if (today.month < birthDate.month ||
+        (today.month == birthDate.month && today.day < birthDate.day)) {
+      age--; // Si no ha cumplido años este año, se resta uno
+    }
+    return age;
   }
 }
