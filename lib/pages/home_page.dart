@@ -21,7 +21,7 @@ import 'package:pedometer/pedometer.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-class HomePage extends StatefulWidget {
+/*class HomePage extends StatefulWidget {
   
   const HomePage({super.key});
 
@@ -92,9 +92,7 @@ class _HomePageState extends State<HomePage> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
-                  //Navigator.pushNamed(context, 'permissions');
                   Navigator.pushReplacementNamed(context, '/permissions');
-                  //context.push('/permissions');
                 },
               ),
             ],
@@ -250,22 +248,12 @@ case 3:
   // Asegúrate de que `user` está disponible antes de la navegación
   final User? user = ModalRoute.of(context)?.settings.arguments as User?;
 
-  // Verificar si el `user` es null antes de navegar
   if (user == null) {
-    return const Center(child: Text('Usuario no encontrado')); // Maneja el caso cuando no haya usuario
+    return const Center(child: Text('Usuario no encontrado')); // Maneja el caso sin usuario
   }
 
-  // Si `user` está disponible, realiza la navegación
-  Future.microtask(() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserPage(user: user), // Pasa el `user` a UserPage
-      ),
-    );
-  });
-
-  return const SizedBox();  // Cambiar por tu página de usuario
+  // Renderiza la pantalla directamente
+  return UserPage(user: user); // Cambiar por tu página de usuario
       default:
         return const Center(child: Text('Página no encontrada'));
     }
@@ -349,3 +337,4 @@ case 3:
     );
   }
 }
+*/

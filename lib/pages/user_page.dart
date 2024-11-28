@@ -1,4 +1,4 @@
-import 'package:calorie_counter/models/user.dart';
+/*import 'package:calorie_counter/models/user.dart';
 import 'package:calorie_counter/widgets/user_page/user_info.dart';
 import 'package:calorie_counter/widgets/user_page/user_profile_header.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +58,7 @@ class UserPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, 'login');
+                      Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(156, 40, 177, 1.0),
@@ -75,4 +75,60 @@ class UserPage extends StatelessWidget {
       ),
     );
   }
+}*/
+
+import 'package:flutter/material.dart';
+import 'package:calorie_counter/models/user.dart';
+
+class UserPage extends StatelessWidget {
+  final User user;
+
+  const UserPage({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Perfil de ${user.name}'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Imagen de perfil
+            const CircleAvatar(
+              radius: 50,
+              // backgroundImage: AssetImage('assets/images/default_profile.png'), // O una imagen local
+            ),
+            const SizedBox(height: 20),
+            // Nombre del usuario
+            Text(
+              'Nombre: ${user.name}',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            // Email del usuario
+            Text(
+              'Correo electrónico: ${user.email}',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            // Aquí puedes agregar más detalles como actividades o historial
+            const Divider(),
+            const SizedBox(height: 10),
+            // Botón de edición de perfil, por ejemplo
+            ElevatedButton(
+              onPressed: () {
+                // Lógica para editar perfil
+                // Por ejemplo, puedes navegar a una página de edición de perfil
+              },
+              child: const Text('Editar perfil'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
+

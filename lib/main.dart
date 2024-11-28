@@ -2,6 +2,7 @@ import 'package:calorie_counter/models/user.dart';
 import 'package:calorie_counter/pages/home_page.dart';
 import 'package:calorie_counter/pages/login_page.dart';
 import 'package:calorie_counter/pages/sign_up_page.dart';
+import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/permissions/permissions_screen.dart';
 import 'package:calorie_counter/providers/app_state_provider.dart';
 import 'package:calorie_counter/providers/permissions_provider.dart';
@@ -68,6 +69,8 @@ class MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
           'home': (_) => HomePage(),
           'signUp': (_) => const SignUpPage(),
           '/permissions': (_) => const PermissionsScreen(),
+          //'profile': (_) => const UserPage(),
+
         },
       ),
     );
