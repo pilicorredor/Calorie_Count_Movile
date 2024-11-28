@@ -1,18 +1,22 @@
+import 'package:calorie_counter/models/user.dart';
 import 'package:calorie_counter/widgets/user_page/user_info.dart';
 import 'package:calorie_counter/widgets/user_page/user_profile_header.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class UserPage extends StatelessWidget {
-  const UserPage({super.key});
+
+  final User? user;
+
+  const UserPage({Key? key, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          const UserProfileHeader(
-              username: 'Lucia',
+          UserProfileHeader(
+              username: user?.name ?? 'Guest',
               profileImageUrl:
                   'https://static.semrush.com/persona/personas/4436574'), // Sección del encabezado
           Expanded(
@@ -27,16 +31,16 @@ class UserPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const UserInfo(
-                    userId: 1,
-                    name: "Andrea",
-                    email: 'lucia123@example.com',
-                    age: 23,
-                    weight: 65,
-                    height: 1.65,
-                    gender: 'Femenino',
-                    goal: 'Bajar peso',
-                    password: "",
+                  UserInfo(
+                    userId: user?.userId ?? 0,
+                    name: user?.name ?? 'Guest',
+                    email: user?.email ?? 'Guest',
+                    age: user?.age ?? 0,
+                    weight: user?.weight ?? 0,
+                    height: user?.height ?? 0,
+                    gender: user?.gender ?? 'Guest',
+                    goal: user?.goal ?? 'Guest',
+                    password: user?.password ?? 'Guest',
                   ), // Sección de información
                   const SizedBox(height: 20),
                   ElevatedButton.icon(

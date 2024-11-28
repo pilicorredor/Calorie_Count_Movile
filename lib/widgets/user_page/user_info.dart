@@ -1,3 +1,4 @@
+import 'package:calorie_counter/models/user.dart';
 import 'package:calorie_counter/widgets/user_page/user_info_row.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ class UserInfo extends StatelessWidget {
   final String gender;
   final String goal;
   final String password;
+
 
   const UserInfo({
     super.key,
@@ -27,6 +29,7 @@ class UserInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

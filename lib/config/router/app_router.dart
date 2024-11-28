@@ -5,7 +5,7 @@ import 'package:calorie_counter/presentation/screens/screens.dart';
 final router = GoRouter(routes: [
   GoRoute(
     path: '/',
-    builder: (context, state) => const HomePage(),
+    //builder: (context, state) => const HomePage(),
   ),
   GoRoute(
     path: '/permissions',
