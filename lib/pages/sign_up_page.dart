@@ -253,13 +253,16 @@ class _SignUpPageState extends State<SignUpPage> {
                       print(password);
                       print(confirmPassword);
                       if (formKey.currentState!.validate()) {
+                        
                         final db = DbAuthentication();
                         db
                             .signup(User(
                                 name: name.text,
                                 email: email.text,
                                 //pendiente metodo edad
-                                age: calculateAge(_dateController as DateTime),
+                                //age: calculateAge(_dateController as DateTime),
+                                age: 0,
+                    
                                 weight: double.parse(weight.text),
                                 height: double.parse(height.text),
                                 gender: gender.value,
