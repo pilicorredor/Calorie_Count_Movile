@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class UserPage extends StatelessWidget {
-
   final User? user;
 
   const UserPage({Key? key, this.user}) : super(key: key);
@@ -42,7 +41,7 @@ class UserPage extends StatelessWidget {
                     goal: user?.goal ?? 'Guest',
                     password: user?.password ?? 'Guest',
                   ), // Sección de información
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: () {
                       // Acción de editar perfil
@@ -55,7 +54,7 @@ class UserPage extends StatelessWidget {
                     label: const Text('Editar Perfil'),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, 'login');

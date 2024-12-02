@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:calorie_counter/models/Recipe.dart';
+import 'package:calorie_counter/providers/db_category.dart';
+import 'package:calorie_counter/providers/db_recipes.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,14 +15,16 @@ class AddRecipes extends StatefulWidget {
 
 class _AddRecipes extends State<AddRecipes> {
   final _formKey = GlobalKey<FormState>();
-    final ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
   XFile? _selectedImage;
 
   // Controladores para los campos de texto
   final TextEditingController _recipeNameController = TextEditingController();
   final TextEditingController _ingredientsController = TextEditingController();
-  final TextEditingController _preparationStepsController = TextEditingController();
+  final TextEditingController _preparationStepsController =
+      TextEditingController();
 
+  final DBRecipes dbRecipes = DBRecipes();
 
   Future<void> _selectImageRecipe() async {
     // Mostrar diálogo de selección
@@ -28,12 +33,14 @@ class _AddRecipes extends State<AddRecipes> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Seleccionar opción'),
-          content: const Text('Elige si deseas tomar una foto o seleccionarla de la galería.'),
+          content: const Text(
+              'Elige si deseas tomar una foto o seleccionarla de la galería.'),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Cerrar el diálogo
-                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                final XFile? pickedFile =
+                    await _picker.pickImage(source: ImageSource.camera);
                 setState(() {
                   _selectedImage = pickedFile;
                 });
@@ -43,7 +50,8 @@ class _AddRecipes extends State<AddRecipes> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Cerrar el diálogo
-                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                final XFile? pickedFile =
+                    await _picker.pickImage(source: ImageSource.gallery);
                 setState(() {
                   _selectedImage = pickedFile;
                 });
@@ -76,7 +84,8 @@ class _AddRecipes extends State<AddRecipes> {
                   color: Colors.grey[300],
                   child: _selectedImage != null
                       ? Image.file(File(_selectedImage!.path))
-                      : const Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
+                      : const Icon(Icons.add_a_photo,
+                          size: 50, color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -132,17 +141,39 @@ class _AddRecipes extends State<AddRecipes> {
 
               // Botón para "Agregar" receta
               ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Receta agregada')),
+                    // Si hay imagen seleccionada, guarda su ruta como texto
+                    String imagePath = _selectedImage?.path ?? '';
+
+                    Recipe newRecipe = Recipe(
+                      name: _recipeNameController.text,
+                      ingredients: _ingredientsController.text,
+                      preparationSteps: _preparationStepsController.text,
+                      imagePath: imagePath,
                     );
 
-                    // Limpiar los campos
-                    _recipeNameController.clear();
-                    _ingredientsController.clear();
-                    _preparationStepsController.clear();
+                    int response = await dbRecipes.addNewRecipe(newRecipe);
+
+                    if (response > 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Receta agregada')),
+                      );
+
+                      _recipeNameController.clear();
+                      _ingredientsController.clear();
+                      _preparationStepsController.clear();
+                      setState(() {
+                        _selectedImage = null;
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Error al agregar la receta')),
+                      );
+                    }
                   }
+                  List<Recipe> recipes = await dbRecipes.getAllRecipes();
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Agregar receta'),

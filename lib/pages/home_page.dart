@@ -6,6 +6,7 @@ import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
 import 'package:calorie_counter/providers/db_foods.dart';
+import 'package:calorie_counter/providers/db_recipes.dart';
 import 'package:calorie_counter/providers/db_steps.dart';
 import 'package:calorie_counter/providers/ui_provider.dart';
 import 'package:calorie_counter/widgets/addItems/category_list.dart';
@@ -22,7 +23,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  
   const HomePage({super.key});
 
   @override
@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   DateTime selectedDate = DateTime.now();
   final DBFood dbFood = DBFood();
   final DBSteps dbSteps = DBSteps();
+  final DBRecipes dbRecipes = DBRecipes();
   final Logger _logger = Logger();
   List<Map<String, dynamic>> stepData = [
     {'date': '01/11/2024', 'i_count': 0, 'f_count': 1200},
@@ -73,14 +74,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: CustomFabAddFood(selectedDate: selectedDate),
       bottomNavigationBar: const CustomNavigationBar(),
-      body: _getBody(currentIndex), // Cambia el cuerpo según el índice
+      body: _getBody(currentIndex, user!), // Cambia el cuerpo según el índice
     );
   }
 
   // Método para obtener el cuerpo dinámico basado en el índice de la navegación
-  Widget _getBody(int currentIndex) {
+  Widget _getBody(int currentIndex, User user) {
     switch (currentIndex) {
       case 0:
+        var userName = user.name ?? 'Usuario';
         return Scaffold(
           appBar: AppBar(
             title: const Text('Aplicación de Nutrición'),
@@ -105,16 +107,16 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         backgroundImage: NetworkImage(
                           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s',
                         ),
                         radius: 24,
                       ),
-                      SizedBox(width: 12),
-                      Text(
+                      const SizedBox(width: 12),
+                      const Text(
                         'Hola\n',
                         style: TextStyle(
                           fontSize: 15,
@@ -122,8 +124,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Text(
-                        '\n Lucia',
-                        style: TextStyle(
+                        '\n $userName',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -243,29 +245,21 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       case 1:
-        return const FavoritesPage(); // Cambiar por tu página de gráficos
+        return FavoritesPage(); // Cambiar por tu página de gráficos
       case 2:
         return const ChartsPage(); // Cambiar por tu página de favoritos
-case 3:
-  // Asegúrate de que `user` está disponible antes de la navegación
-  final User? user = ModalRoute.of(context)?.settings.arguments as User?;
+      case 3:
+        // Asegúrate de que `user` está disponible antes de la navegación
+        final User? user = ModalRoute.of(context)?.settings.arguments as User?;
 
-  // Verificar si el `user` es null antes de navegar
-  if (user == null) {
-    return const Center(child: Text('Usuario no encontrado')); // Maneja el caso cuando no haya usuario
-  }
+        // Verificar si el `user` es null antes de navegar
+        if (user == null) {
+          return const Center(
+              child: Text(
+                  'Usuario no encontrado')); // Maneja el caso cuando no haya usuario
+        }
 
-  // Si `user` está disponible, realiza la navegación
-  Future.microtask(() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserPage(user: user), // Pasa el `user` a UserPage
-      ),
-    );
-  });
-
-  return const SizedBox();  // Cambiar por tu página de usuario
+        return UserPage(user: user); // Cambiar por tu página de usuario
       default:
         return const Center(child: Text('Página no encontrada'));
     }
