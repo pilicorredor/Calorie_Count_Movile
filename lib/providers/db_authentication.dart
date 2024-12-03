@@ -62,4 +62,17 @@ class DbAuthentication {
         await db.query("users", where: "email = ?", whereArgs: [email]);
     return responseUser.isNotEmpty? User.fromJson(responseUser.first):null;
   }
+
+// Método para actualizar los datos del usuario en la base de datos usando el email
+Future<int> updateUserByEmail(User user) async {
+  final Database db = await initDB();
+
+  // Actualiza la fila del usuario donde el email coincide
+  return await db.update(
+    'users', // Nombre de la tabla
+    user.toJson(), // El nuevo objeto en formato JSON con los datos actualizados
+    where: "email = ?", // Condición para actualizar la fila correcta usando el email
+    whereArgs: [user.email], // Los parámetros de la condición (el email del usuario)
+  );
+}
 }

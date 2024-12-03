@@ -1,23 +1,55 @@
 import 'package:calorie_counter/models/user.dart';
+import 'package:calorie_counter/pages/edit_profile_page.dart';
+import 'package:calorie_counter/pages/home_page.dart';
+import 'package:calorie_counter/pages/login_page.dart';
 import 'package:calorie_counter/widgets/user_page/user_info.dart';
 import 'package:calorie_counter/widgets/user_page/user_profile_header.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class UserPage extends StatelessWidget {
+class UserPage extends StatefulWidget {
   final User? user;
 
   const UserPage({Key? key, this.user}) : super(key: key);
 
   @override
+  _UserPageState createState() => _UserPageState();
+}
+
+class _UserPageState extends State<UserPage> {
+  late User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = widget.user;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Perfil'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+/*            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomePage(arguments: currentUser),
+              ),
+            );*/
+            //Navigator.pushReplacementNamed(context, 'home');
+          },
+        ),
+      ),
       body: Column(
         children: [
           UserProfileHeader(
-              username: user?.name ?? 'Guest',
-              profileImageUrl:
-                  'https://static.semrush.com/persona/personas/4436574'), // Sección del encabezado
+            username: currentUser?.name ?? 'Guest',
+            profileImageUrl:
+                'https://static.semrush.com/persona/personas/4436574', // Sección del encabezado
+          ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(20.0),
@@ -31,20 +63,38 @@ class UserPage extends StatelessWidget {
               child: Column(
                 children: [
                   UserInfo(
-                    userId: user?.userId ?? 0,
-                    name: user?.name ?? 'Guest',
-                    email: user?.email ?? 'Guest',
-                    age: user?.age ?? 0,
-                    weight: user?.weight ?? 0,
-                    height: user?.height ?? 0,
-                    gender: user?.gender ?? 'Guest',
-                    goal: user?.goal ?? 'Guest',
-                    password: user?.password ?? 'Guest',
+                    userId: currentUser?.userId ?? 0,
+                    name: currentUser?.name ?? 'Guest',
+                    email: currentUser?.email ?? 'Guest',
+                    age: currentUser?.age ?? 1,
+                    weight: currentUser?.weight ?? 0,
+                    height: currentUser?.height ?? 0,
+                    gender: currentUser?.gender ?? 'Guest',
+                    goal: currentUser?.goal ?? 'Guest',
+                    password: currentUser?.password ?? 'Guest',
                   ), // Sección de información
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      // Acción de editar perfil
+                    onPressed: () async {
+                      // Navegar a la página de edición de perfil y esperar el retorno del usuario actualizado
+                      final updatedUser = await Navigator.push<User>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfilePage(
+                              user: currentUser!), // Pasa el objeto currentUser
+                        ),
+                      );
+
+                      if (updatedUser != null) {
+                        // Si se ha editado el perfil, muestra el mensaje y actualiza el usuario
+                        Fluttertoast.showToast(msg: "Perfil actualizado");
+                        setState(() {
+                          currentUser =
+                              updatedUser; // Actualiza el estado con el nuevo usuario
+                        });
+                      } else {
+                        currentUser = currentUser;
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(156, 40, 177, 1.0),
@@ -53,11 +103,17 @@ class UserPage extends StatelessWidget {
                     icon: const Icon(Icons.edit),
                     label: const Text('Editar Perfil'),
                   ),
-
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, 'login');
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const LoginPage()), // Reemplaza LoginPage con tu pantalla de login
+                        (Route<dynamic> route) =>
+                            false, // Esta condición asegura que todas las rutas anteriores sean eliminadas
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(156, 40, 177, 1.0),
