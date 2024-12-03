@@ -29,7 +29,7 @@ class FoodCard extends StatelessWidget {
               child: Icon(
                 category.icon.toIcon(),
                 size: 80,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
@@ -37,10 +37,11 @@ class FoodCard extends StatelessWidget {
               category.categoryName,
               style: const TextStyle(
                 fontSize: 18,
-                color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

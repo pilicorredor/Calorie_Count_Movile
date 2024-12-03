@@ -5,6 +5,7 @@ import 'package:calorie_counter/pages/category_detail_page.dart'; // Asegúrate 
 import 'package:calorie_counter/pages/charts_page.dart';
 import 'package:calorie_counter/pages/favorites_page.dart';
 import 'package:calorie_counter/pages/user_page.dart';
+import 'package:calorie_counter/providers/db_category.dart';
 import 'package:calorie_counter/providers/db_foods.dart';
 import 'package:calorie_counter/providers/db_recipes.dart';
 import 'package:calorie_counter/providers/db_steps.dart';
@@ -32,12 +33,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // Lista de categorías
   String _stepCount = '0';
-  List<CategoryModel> categories = CategoryList().getAllCategories();
-  int lengthCategories = CategoryList().getLenghtCategories();
   DateTime selectedDate = DateTime.now();
+  final DBFeatures dbFeature = DBFeatures();
   final DBFood dbFood = DBFood();
   final DBSteps dbSteps = DBSteps();
   final DBRecipes dbRecipes = DBRecipes();
+  List<CategoryModel> _categories = [];
   final Logger _logger = Logger();
   List<Map<String, dynamic>> stepData = [
     {'date': '01/11/2024', 'i_count': 0, 'f_count': 1200},
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> {
     {'date': '04/11/2024', 'i_count': 0, 'f_count': 1600},
     // Agrega más datos según necesites
   ];
+
   Future<void> cargarDatosDesdeLista() async {
     for (var data in stepData) {
       String date = data['date'];
@@ -56,12 +58,21 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _loadCategories() async {
+    final categories = await dbFeature.getAllFeatures();
+    setState(() {
+      _categories = categories;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     initPlatformState();
     updateTodaySteps();
     cargarDatosDesdeLista(); //si se quieren datos de prueba antiguos abría que descomentar el siguiente método en la primera ejecución
+    _loadCategories();
+    _reloadCategories();
   }
 
   @override
@@ -78,188 +89,202 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Método para obtener el cuerpo dinámico basado en el índice de la navegación
-  Widget _getBody(int currentIndex, User user) {
-    switch (currentIndex) {
-      case 0:
-        var userName = user.name ?? 'Usuario';
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Aplicación de Nutrición'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () {},
+  void _reloadCategories() async {
+    final updatedCategories = await dbFeature.getAllFeatures();
+    setState(() {
+      _categories = updatedCategories;
+    });
+  }
+
+  Widget _getHomePage(User user) {
+    var userName = user.name ?? 'Usuario';
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Aplicación de Nutrición'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, '/permissions');
+            },
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s',
+                    ),
+                    radius: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Hola\n',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Text(
+                    '\n $userName',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  //Navigator.pushNamed(context, 'permissions');
-                  Navigator.pushReplacementNamed(context, '/permissions');
-                  //context.push('/permissions');
+              const SizedBox(height: 20),
+              EasyDateTimeLine(
+                initialDate: DateTime.now(),
+                onDateChange: (newSelectedDate) {
+                  setState(() {
+                    selectedDate = newSelectedDate;
+                  });
+                },
+                activeColor: const Color.fromARGB(255, 238, 155, 255),
+                locale: "es",
+                headerProps: const EasyHeaderProps(
+                  dateFormatter: DateFormatter.monthOnly(),
+                ),
+                dayProps: const EasyDayProps(
+                  height: 56.0,
+                  width: 56.0,
+                  dayStructure: DayStructure.dayNumDayStr,
+                  inactiveDayStyle: DayStyle(
+                    borderRadius: 48.0,
+                    dayNumStyle: TextStyle(
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  activeDayStyle: DayStyle(
+                    dayNumStyle: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Promoción de la app
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 221, 194, 233),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Image.network(
+                      'https://cdn.pixabay.com/photo/2018/09/03/11/51/avocado-3651037_960_720.png',
+                      width: 70,
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Text(
+                        'Un cuerpo saludable viene con buenos nutrientes.\n¡Empieza tu viaje a la salud ahora!',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              CaloriesDisplayWidget(
+                futureCalories: getConsumedCaloriesForSelectedDate(),
+                icon: const Icon(
+                  Icons.food_bank_sharp,
+                  color: Colors.blue,
+                  size: 40,
+                ),
+                text: "Calorías consumidas: ",
+              ),
+              CaloriesDisplayWidget(
+                futureCalories: getBurnedCaloriesForSelectedDate(),
+                icon: const Icon(
+                  Icons.local_fire_department,
+                  color: Colors.orange,
+                  size: 40,
+                ),
+                text: "Calorías gastadas: ",
+              ),
+              StepCounterWidget(futureSteps: getStepsForSelectedDate()),
+              const Text(
+                'Categorías',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Lista de categorías
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  return FoodCard(
+                    category: category,
+                    onTap: () =>
+                        _navigateToCategoryDetail(category.categoryName),
+                  );
                 },
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s',
-                        ),
-                        radius: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Hola\n',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                      Text(
-                        '\n $userName',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  EasyDateTimeLine(
-                    initialDate: DateTime.now(),
-                    onDateChange: (newSelectedDate) {
-                      setState(() {
-                        selectedDate = newSelectedDate;
-                      });
-                    },
-                    activeColor: const Color.fromARGB(255, 238, 155, 255),
-                    locale: "es",
-                    headerProps: const EasyHeaderProps(
-                      dateFormatter: DateFormatter.monthOnly(),
-                    ),
-                    dayProps: const EasyDayProps(
-                      height: 56.0,
-                      width: 56.0,
-                      dayStructure: DayStructure.dayNumDayStr,
-                      inactiveDayStyle: DayStyle(
-                        borderRadius: 48.0,
-                        dayNumStyle: TextStyle(
-                          fontSize: 18.0,
-                        ),
-                      ),
-                      activeDayStyle: DayStyle(
-                        dayNumStyle: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Promoción de la app
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 221, 194, 233),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Image.network(
-                          'https://cdn.pixabay.com/photo/2018/09/03/11/51/avocado-3651037_960_720.png',
-                          width: 70,
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'Un cuerpo saludable viene con buenos nutrientes.\n¡Empieza tu viaje a la salud ahora!',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  CaloriesDisplayWidget(
-                    futureCalories: getConsumedCaloriesForSelectedDate(),
-                    icon: const Icon(
-                      Icons.food_bank_sharp,
-                      color: Colors.blue,
-                      size: 40,
-                    ),
-                    text: "Calorías consumidas: ",
-                  ),
-                  CaloriesDisplayWidget(
-                    futureCalories: getBurnedCaloriesForSelectedDate(),
-                    icon: const Icon(
-                      Icons.local_fire_department,
-                      color: Colors.orange,
-                      size: 40,
-                    ),
-                    text: "Calorías gastadas: ",
-                  ),
-                  StepCounterWidget(futureSteps: getStepsForSelectedDate()),
-                  const Text(
-                    'Categorías',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Lista de categorías
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: lengthCategories,
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return FoodCard(
-                        category: category,
-                        onTap: () =>
-                            _navigateToCategoryDetail(category.categoryName),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+        ),
+      ),
+    );
+  }
+
+  Widget _getFavoritesPage() {
+    return FavoritesPage();
+  }
+
+  Widget _getChartsPage() {
+    return const ChartsPage();
+  }
+
+  Widget _getUserPage(User user) {
+    final User? user = ModalRoute.of(context)?.settings.arguments as User?;
+    if (user == null) {
+      return const Center(child: Text('Usuario no encontrado'));
+    }
+
+    return UserPage(user: user);
+  }
+
+  Widget _getBody(int currentIndex, User user) {
+    switch (currentIndex) {
+      case 0:
+        return _getHomePage(user);
       case 1:
-        return FavoritesPage(); // Cambiar por tu página de gráficos
+        return _getFavoritesPage();
       case 2:
-        return const ChartsPage(); // Cambiar por tu página de favoritos
+        return _getChartsPage();
       case 3:
-        // Asegúrate de que `user` está disponible antes de la navegación
-        final User? user = ModalRoute.of(context)?.settings.arguments as User?;
-
-        // Verificar si el `user` es null antes de navegar
-        if (user == null) {
-          return const Center(
-              child: Text(
-                  'Usuario no encontrado')); // Maneja el caso cuando no haya usuario
-        }
-
-        return UserPage(user: user); // Cambiar por tu página de usuario
+        return _getUserPage(user);
       default:
         return const Center(child: Text('Página no encontrada'));
     }

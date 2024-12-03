@@ -32,7 +32,6 @@ class _AddFoodState extends State<AddFood> {
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
   final TextEditingController _categoryName = TextEditingController();
-  final TextEditingController _categoryColor = TextEditingController();
 
   // Almacena la categoría seleccionada
   String _selectedCategory = 'Selecciona Categoría';
@@ -40,6 +39,7 @@ class _AddFoodState extends State<AddFood> {
 
   final List<String> _categories = CategoryList().getAllNamesCategories();
   String? _selectedIcon;
+  String? _selectedColor;
 
   final DBFood dbFood = DBFood();
   final DBFeatures dbFeature = DBFeatures();
@@ -51,12 +51,14 @@ class _AddFoodState extends State<AddFood> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Seleccionar opción'),
-          content: const Text('Elige si deseas tomar una foto o seleccionarla de la galería.'),
+          content: const Text(
+              'Elige si deseas tomar una foto o seleccionarla de la galería.'),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Cerrar el diálogo
-                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                final XFile? pickedFile =
+                    await _picker.pickImage(source: ImageSource.camera);
                 setState(() {
                   _selectedImage = pickedFile;
                 });
@@ -66,7 +68,8 @@ class _AddFoodState extends State<AddFood> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Cerrar el diálogo
-                final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                final XFile? pickedFile =
+                    await _picker.pickImage(source: ImageSource.gallery);
                 setState(() {
                   _selectedImage = pickedFile;
                 });
@@ -98,7 +101,8 @@ class _AddFoodState extends State<AddFood> {
                   color: Colors.grey[300],
                   child: _selectedImage != null
                       ? Image.file(File(_selectedImage!.path))
-                      : const Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
+                      : const Icon(Icons.add_a_photo,
+                          size: 50, color: Colors.grey),
                 ),
               ),
               // Campo de texto para el nombre del alimento
@@ -207,20 +211,24 @@ class _AddFoodState extends State<AddFood> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     // Si hay imagen seleccionada, guarda su ruta como texto
-                    String imagePath = _selectedImage != null ? _selectedImage!.path : '';
+                    String imagePath =
+                        _selectedImage != null ? _selectedImage!.path : '';
 
                     Food newFood = Food(
                       name: _foodNameController.text,
                       quantity: double.parse(_quantityController.text),
                       unit: _selectedUnit,
                       calories: double.parse(_caloriesController.text),
-                      createdAt: DateFormat('dd/MM/yyyy').format(widget.selectedDate),
+                      createdAt:
+                          DateFormat('dd/MM/yyyy').format(widget.selectedDate),
                       categoryName: _selectedCategory,
-                      imagePath: imagePath,  // Almacena la ruta de la imagen como texto
+                      imagePath:
+                          imagePath, // Almacena la ruta de la imagen como texto
                     );
 
-                  print('Alimento a agregar: $newFood'); // Verifica los datos que se están pasando
-                  await dbFood.addNewFood(newFood);
+                    print(
+                        'Alimento a agregar: $newFood'); // Verifica los datos que se están pasando
+                    await dbFood.addNewFood(newFood);
 
                     // Verifica si el alimento fue agregado correctamente
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -243,7 +251,6 @@ class _AddFoodState extends State<AddFood> {
                   List<Food> foods = await dbFood.getAllFoods();
                   print('Todos los alimentos: $foods');
                 },
-
                 icon: const Icon(Icons.add),
                 label: const Text('Agregar'),
               ),
@@ -255,15 +262,15 @@ class _AddFoodState extends State<AddFood> {
     );
   }
 
-  void _selectCategory() {
-    final categoryList =
-        CategoryList().catList; 
+  void _selectCategory() async {
+    final categoryList = await dbFeature.getAllFeatures();
 
     showModalBottomSheet(
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (BuildContext context) {
         return Column(
-          mainAxisSize: MainAxisSize.min, 
+          mainAxisSize: MainAxisSize.min,
           children: [
             Expanded(
               child: ListView.builder(
@@ -362,9 +369,11 @@ class _AddFoodState extends State<AddFood> {
                           radius: 18.0, // Tamaño del círculo
                         ),
                         const SizedBox(width: 16.0),
-                        const Text(
-                          'Seleccionar Color',
-                          style: TextStyle(fontSize: 16.0),
+                        Text(
+                          _selectedColor != null
+                              ? '$_selectedColor'
+                              : 'Seleccionar Color',
+                          style: const TextStyle(fontSize: 16.0),
                         ),
                       ],
                     ),
@@ -377,10 +386,12 @@ class _AddFoodState extends State<AddFood> {
           actions: [
             TextButton(
               onPressed: () async {
-                if (_categoryName.text.isNotEmpty && _selectedIcon != null) {
+                if (_categoryName.text.isNotEmpty &&
+                    _selectedIcon != null &&
+                    _selectedColor != null) {
                   CategoryModel newCategory = CategoryModel(
                     categoryName: _categoryName.text,
-                    color: _categoryColor.text,
+                    color: _selectedColor!,
                     icon: _selectedIcon!, // Elige el icono seleccionado
                   );
 
@@ -416,6 +427,7 @@ class _AddFoodState extends State<AddFood> {
 
 // Método para seleccionar un color
   void _selectColor() {
+    String? hexColor;
     showModalBottomSheet(
       shape: Constants.bottomSheet(),
       isDismissible: false,
@@ -429,16 +441,18 @@ class _AddFoodState extends State<AddFood> {
               physics: const NeverScrollableScrollPhysics(),
               circleSize: 50.0,
               onColorChange: (Color color) {
-                var hexColor =
-                    '#${color.value.toRadixString(16).substring(2, 8)}';
+                hexColor = '#${color.value.toRadixString(16).substring(2, 8)}';
                 setState(() {
                   CategoryModel().color =
-                      hexColor; // Actualiza el color en el modelo
+                      hexColor!; // Actualiza el color en el modelo
                 });
               },
             ),
             GestureDetector(
               onTap: () {
+                setState(() {
+                  _selectedColor = hexColor; // Guardar el color seleccionado
+                });
                 Navigator.pop(context);
               },
               child: Constants.customButton(

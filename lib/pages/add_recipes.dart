@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:calorie_counter/models/Recipe.dart';
-import 'package:calorie_counter/providers/db_category.dart';
 import 'package:calorie_counter/providers/db_recipes.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

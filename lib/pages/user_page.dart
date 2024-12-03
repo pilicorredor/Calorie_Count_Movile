@@ -28,21 +28,6 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-/*            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(arguments: currentUser),
-              ),
-            );*/
-            //Navigator.pushReplacementNamed(context, 'home');
-          },
-        ),
-      ),
       body: Column(
         children: [
           UserProfileHeader(
@@ -73,7 +58,7 @@ class _UserPageState extends State<UserPage> {
                     goal: currentUser?.goal ?? 'Guest',
                     password: currentUser?.password ?? 'Guest',
                   ), // Sección de información
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: () async {
                       // Navegar a la página de edición de perfil y esperar el retorno del usuario actualizado
@@ -103,7 +88,7 @@ class _UserPageState extends State<UserPage> {
                     icon: const Icon(Icons.edit),
                     label: const Text('Editar Perfil'),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(

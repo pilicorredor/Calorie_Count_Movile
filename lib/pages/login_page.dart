@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-      Navigator.pushReplacementNamed(context, 'home', arguments: userDetails);
+      Navigator.pushNamed(context, 'home', arguments: userDetails);
     } else {
       setState(() {
         isLoginTrue = true;
@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                       const Text("¿No tienes una cuenta?"),
                       TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, 'signUp');
+                            Navigator.pushNamed(context, 'signUp');
                           },
                           child: const Text("Registrate"))
                     ],

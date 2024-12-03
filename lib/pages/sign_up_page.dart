@@ -275,7 +275,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             textColor: Colors.white,
                             fontSize: 16.0,
                           );
-                          Navigator.pushReplacementNamed(context, 'login');
+                          Navigator.pushNamed(context, 'login');
                         });
                       }
                     },
@@ -288,7 +288,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       const Text("¿Ya tienes una cuenta?"),
                       TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, 'login');
+                            Navigator.pushNamed(context, 'login');
                           },
                           child: const Text("Inicia Sesión"))
                     ],
