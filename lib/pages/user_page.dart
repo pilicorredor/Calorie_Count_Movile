@@ -30,18 +30,6 @@ class _UserPageState extends State<UserPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfil'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-/*            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomePage(arguments: currentUser),
-              ),
-            );*/
-            //Navigator.pushReplacementNamed(context, 'home');
-          },
-        ),
       ),
       body: Column(
         children: [

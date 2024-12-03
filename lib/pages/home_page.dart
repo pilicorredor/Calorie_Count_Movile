@@ -23,7 +23,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, User? arguments});
 
   @override
   _HomePageState createState() => _HomePageState();
